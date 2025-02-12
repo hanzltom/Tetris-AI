@@ -2,7 +2,6 @@ import pygame
 import sys
 import os
 from colors import COLORS
-from drawer import draw_edges, draw_board
 from screen_setup import SCREEN_WIDTH, SCREEN_HEIGHT
 from Board import Board
 
