@@ -1,5 +1,6 @@
 import pygame
 import sys
+import os
 
 # Initialize Pygame
 pygame.init()
@@ -15,6 +16,7 @@ def draw_board():
         pygame.draw.line(screen, WHITE, (0, y_cor), (SCREEN_WIDTH, y_cor), 1)
 
 # Set up the window
+os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (400,0)
 SCREEN_WIDTH, SCREEN_HEIGHT = 600, 800
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Tetris")
