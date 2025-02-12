@@ -34,3 +34,8 @@ class Board:
         for i in range(y_boxes):
             y_cor = SCREEN_HEIGHT / 21 * i
             pygame.draw.line(surface, COLORS["WHITE"], (0, y_cor), (SCREEN_WIDTH, y_cor), 1)
+
+    def first_print(self, pygame, surface):
+        surface.fill(COLORS["BLACK"])
+        self.print(pygame, surface)
+        self.print_lines(pygame, surface)
