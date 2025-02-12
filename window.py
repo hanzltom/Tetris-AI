@@ -2,35 +2,15 @@ import pygame
 import sys
 import os
 from colors import COLORS
+from drawer import draw_edges, draw_board
+from screen_setup import SCREEN_WIDTH, SCREEN_HEIGHT
+
 
 # Initialize Pygame
 pygame.init()
 
-def draw_board():
-    # Vertical lines
-    for i in range(11):
-        x_cor = SCREEN_WIDTH / 11 * i
-        pygame.draw.line(screen, COLORS["WHITE"], (x_cor, 0), (x_cor, SCREEN_HEIGHT), 1)
-    # Horizontal lines
-    for i in range(21):
-        y_cor = SCREEN_HEIGHT / 21 * i
-        pygame.draw.line(screen, COLORS["WHITE"], (0, y_cor), (SCREEN_WIDTH, y_cor), 1)
-
-def draw_edges():
-    for i in range(11):
-        for j in range(21):
-
-            x_cor = SCREEN_WIDTH / 11 * i
-            y_cor = SCREEN_HEIGHT / 21 * j
-            if i == 0 or i == 10:
-                pygame.draw.rect(screen, COLORS["GREY"], pygame.Rect(x_cor, y_cor,x_cor + SCREEN_WIDTH / 11, y_cor + SCREEN_HEIGHT / 21))
-            elif j == 0 or j == 20:
-                pygame.draw.rect(screen, COLORS["GREY"], pygame.Rect(x_cor, y_cor, x_cor + SCREEN_WIDTH / 11, y_cor + SCREEN_HEIGHT / 21))
-
-
 # Set up window position
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (400,0)
-SCREEN_WIDTH, SCREEN_HEIGHT = 600, 800
 # Set up window dimensions
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Tetris")
@@ -44,8 +24,8 @@ while running:
 
     # Fill the screen with white
     screen.fill(COLORS["BLACK"])
-    draw_edges()
-    draw_board()
+    draw_edges(pygame, screen)
+    draw_board(pygame, screen)
     # Update the display
     pygame.display.flip()
 
