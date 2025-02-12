@@ -4,6 +4,7 @@ import os
 from colors import COLORS
 from drawer import draw_edges, draw_board
 from screen_setup import SCREEN_WIDTH, SCREEN_HEIGHT
+from Board import Board
 
 
 # Initialize Pygame
@@ -15,6 +16,9 @@ os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (400,0)
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Tetris")
 
+#Board
+board = Board()
+
 # Game Loop
 running = True
 while running:
@@ -24,8 +28,9 @@ while running:
 
     # Fill the screen with white
     screen.fill(COLORS["BLACK"])
-    draw_edges(pygame, screen)
-    draw_board(pygame, screen)
+    board.print(pygame, screen)
+    board.print_lines(pygame, screen)
+
     # Update the display
     pygame.display.flip()
 
