@@ -15,6 +15,18 @@ def draw_board():
         y_cor = SCREEN_HEIGHT / 21 * i
         pygame.draw.line(screen, WHITE, (0, y_cor), (SCREEN_WIDTH, y_cor), 1)
 
+def draw_edges():
+    for i in range(11):
+        for j in range(21):
+
+            x_cor = SCREEN_WIDTH / 11 * i
+            y_cor = SCREEN_HEIGHT / 21 * j
+            if i == 0 or i == 10:
+                pygame.draw.rect(screen, GREY, pygame.Rect(x_cor, y_cor,x_cor + SCREEN_WIDTH / 11, y_cor + SCREEN_HEIGHT / 21))
+            elif j == 0 or j == 20:
+                pygame.draw.rect(screen, GREY, pygame.Rect(x_cor, y_cor, x_cor + SCREEN_WIDTH / 11, y_cor + SCREEN_HEIGHT / 21))
+
+
 # Set up the window
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (400,0)
 SCREEN_WIDTH, SCREEN_HEIGHT = 600, 800
@@ -24,6 +36,7 @@ pygame.display.set_caption("Tetris")
 # Colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+GREY = (128,128,128)
 
 # Game Loop
 running = True
@@ -34,6 +47,7 @@ while running:
 
     # Fill the screen with white
     screen.fill(BLACK)
+    draw_edges()
     draw_board()
     # Update the display
     pygame.display.flip()
