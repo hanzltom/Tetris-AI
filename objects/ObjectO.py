@@ -1,7 +1,7 @@
 from objects.Object import Object
 
 
-class Line(Object):
+class ObjectO(Object):
     def __init__(self):
         pass
 

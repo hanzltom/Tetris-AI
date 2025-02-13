@@ -1,7 +1,7 @@
-from abc import abstractstaticmethod
+from abc import ABC,  abstractstaticmethod
 
 
-class Object:
+class Object(ABC):
     structure = [[]]
 
     @abstractstaticmethod
