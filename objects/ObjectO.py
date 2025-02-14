@@ -6,6 +6,6 @@ class ObjectO(Object):
         self.color = "YELLOW"
         self.structure[0][0] = True
         self.structure[0][1] = True
-        self.structure[0][1] = True
+        self.structure[1][0] = True
         self.structure[1][1] = True
 
