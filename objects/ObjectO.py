@@ -9,5 +9,3 @@ class ObjectO(Object):
         self.structure[0][1] = True
         self.structure[1][1] = True
 
-    def print(self):
-        pass

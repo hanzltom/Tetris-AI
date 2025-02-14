@@ -7,5 +7,3 @@ class ObjectI(Object):
         for i in range(4):
             self.structure[i][1] = True
 
-    def print(self):
-        pass

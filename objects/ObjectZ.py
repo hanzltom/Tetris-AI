@@ -9,5 +9,3 @@ class ObjectZ(Object):
         self.structure[1][1] = True
         self.structure[1][2] = True
 
-    def print(self):
-        pass

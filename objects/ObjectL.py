@@ -8,5 +8,3 @@ class ObjectL(Object):
             self.structure[i][1] = True
         self.structure[2][2] = True
 
-    def print(self):
-        pass
