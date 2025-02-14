@@ -27,10 +27,10 @@ class Board:
 
                 if x == 0 or x == 10 or y == 0 or y == 20:
                     self.board[y].append(
-                        Field(Position( x, y, (x_cor, y_cor), (x_cor + SCREEN_WIDTH / 11, y_cor + SCREEN_HEIGHT / 21)), False))
+                        Field(Position( x, y, (x_cor, y_cor), (SCREEN_WIDTH / 11, SCREEN_HEIGHT / 21)), False))
                 else:
                     self.board[y].append(
-                    Field(Position( x, y, (x_cor, y_cor), (x_cor + SCREEN_WIDTH / 11, y_cor + SCREEN_HEIGHT / 21)), True))
+                    Field(Position( x, y, (x_cor, y_cor), (SCREEN_WIDTH / 11, SCREEN_HEIGHT / 21)), True))
 
 
     def print_edges(self, pygame, screen):
@@ -60,4 +60,4 @@ class Board:
         if self.check_collision():
             return True
 
-        new_object.set_pos(x_boxes, y_boxes)
+        new_object.set_pos()
