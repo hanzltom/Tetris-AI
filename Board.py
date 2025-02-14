@@ -5,11 +5,11 @@ from objects.ObjectO import ObjectO
 from objects.ObjectS import ObjectS
 from objects.ObjectT import ObjectT
 from objects.ObjectZ import ObjectZ
+from objects.Object import Object
 from screen_setup import SCREEN_WIDTH, SCREEN_HEIGHT, x_boxes, y_boxes
 from Field import Field
 from Position import Position
 from colors import COLORS
-from objects import *
 import random
 
 object_list = [ObjectI, ObjectJ, ObjectL, ObjectO, ObjectS, ObjectT, ObjectZ]
@@ -51,13 +51,18 @@ class Board:
         self.print_edges(pygame, surface)
         self.print_lines(pygame, surface)
 
-    def check_collision(self):
-        return False
+    def is_collision(self, new_object):
+        for coord in new_object.pos:
+            if not self.board[coord[1]][coord[0]].is_accessible():
+                return True
 
-    def create_object(self) -> bool :
+    def create_object(self):
         chosen_object = random.choice(object_list)
         new_object = chosen_object()
-        if self.check_collision():
-            return True
-
+        print(f"Vybrano: {type(new_object)}")
         new_object.set_pos()
+        print(f"Pozice: {new_object.pos}")
+        if not self.is_collision(new_object):
+            return True, new_object
+        else:
+            return False, new_object
