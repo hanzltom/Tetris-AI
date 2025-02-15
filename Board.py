@@ -124,6 +124,12 @@ class Board:
             object.pos = new_pos
 
         elif move == "RIGHT":
-            pass
+            new_pos = []
+            for x, y in object.pos:
+                x2 = object.center_pos[0] + object.center_pos[1] - y
+                y2 = x + object.center_pos[1] - object.center_pos[0]
+                new_pos.append((x2, y2))
+
+            object.pos = new_pos
         else:
             raise ValueError(f"Bad rotation {move}")
