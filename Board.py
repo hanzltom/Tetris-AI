@@ -25,15 +25,15 @@ class Board:
             self.board.append([])
             for x in range(x_boxes):
 
-                x_cor = SCREEN_WIDTH / 11 * x
-                y_cor = SCREEN_HEIGHT / 21 * y
+                x_cor = SCREEN_WIDTH / x_boxes * x
+                y_cor = SCREEN_HEIGHT / y_boxes * y
 
-                if x == 0 or x == 10 or y == 0 or y == 20:
+                if x == 0 or x == x_boxes - 1 or y == 0 or y == y_boxes - 1:
                     self.board[y].append(
-                        Field(Position( x, y, (x_cor, y_cor), (SCREEN_WIDTH / 11, SCREEN_HEIGHT / 21)), False))
+                        Field(Position( x, y, (x_cor, y_cor), (SCREEN_WIDTH / x_boxes, SCREEN_HEIGHT / y_boxes)), False))
                 else:
                     self.board[y].append(
-                    Field(Position( x, y, (x_cor, y_cor), (SCREEN_WIDTH / 11, SCREEN_HEIGHT / 21)), True))
+                    Field(Position( x, y, (x_cor, y_cor), (SCREEN_WIDTH / x_boxes, SCREEN_HEIGHT / y_boxes)), True))
 
 
     def print_edges(self, pygame, screen):
@@ -178,6 +178,7 @@ class Board:
                                 self.board[above_y][x].accessible = True
 
 
+                    # Print after each line clearance
                     self.first_print(pygame, surface)
                     pygame.display.flip()
                     time.sleep(1)
