@@ -77,6 +77,7 @@ class Board:
                     return False
 
             new_pos = []
+            object.center_pos = (object.center_pos[0] - 1, object.center_pos[1])
             for x, y in object.pos:
                 new_pos.append((x - 1, y))
 
@@ -89,6 +90,7 @@ class Board:
                     return False
 
             new_pos = []
+            object.center_pos = (object.center_pos[0] + 1, object.center_pos[1])
             for x, y in object.pos:
                 new_pos.append((x + 1, y))
 
@@ -101,6 +103,7 @@ class Board:
                     return False
 
             new_pos = []
+            object.center_pos = (object.center_pos[0], object.center_pos[1] + 1)
             for x, y in object.pos:
                 new_pos.append((x, y + 1))
 
@@ -111,4 +114,12 @@ class Board:
             raise ValueError(f"Bad move {move}")
 
     def rotate_piece(self, object, move):
-        pass
+        if move == "LEFT":
+            new_pos = []
+            for x, y in object.pos:
+                x2 = y +
+                y2 =
+        elif move == "RIGHT":
+            pass
+        else:
+            raise ValueError(f"Bad move {move}")
