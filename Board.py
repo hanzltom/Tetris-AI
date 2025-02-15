@@ -1,3 +1,5 @@
+from logging import raiseExceptions
+
 from objects.ObjectI import ObjectI
 from objects.ObjectJ import ObjectJ
 from objects.ObjectL import ObjectL
@@ -66,3 +68,47 @@ class Board:
             return True, new_object
         else:
             return False, new_object
+
+
+    def move_object(self, object, move : str) -> bool:
+        if move == "LEFT":
+            for x, y in object.pos:
+                if not self.board[y][x - 1].is_accessible():
+                    return False
+
+            new_pos = []
+            for x, y in object.pos:
+                new_pos.append((x - 1, y))
+
+            object.pos = new_pos
+            return True
+
+        elif move == "RIGHT":
+            for x, y in object.pos:
+                if not self.board[y][x + 1].is_accessible():
+                    return False
+
+            new_pos = []
+            for x, y in object.pos:
+                new_pos.append((x + 1, y))
+
+            object.pos = new_pos
+            return True
+
+        elif move == "DOWN":
+            for x, y in object.pos:
+                if not self.board[y + 1][x].is_accessible():
+                    return False
+
+            new_pos = []
+            for x, y in object.pos:
+                new_pos.append((x, y + 1))
+
+            object.pos = new_pos
+            return True
+
+        else:
+            raise ValueError(f"Bad move {move}")
+
+    def rotate_piece(self, object, move):
+        pass

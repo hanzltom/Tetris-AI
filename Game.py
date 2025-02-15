@@ -41,15 +41,18 @@ class Game:
                         running = False
                     elif event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_a:
-                            self.board.move_object(new_object, "LEFT")
+                            suc = self.board.move_object(new_object, "LEFT")
+                            print(f"Move left {suc}")
                         elif event.key == pygame.K_d:
-                            self.board.move_object(new_object, "RIGHT")
+                            suc = self.board.move_object(new_object, "RIGHT")
+                            print(f"Move right {suc}")
                         elif event.key == pygame.K_s:
-                            self.board.move_object(new_object, "DOWN")
+                            suc = self.board.move_object(new_object, "DOWN")
+                            print(f"Move down {suc}")
                         elif event.key == pygame.K_e:
-                            self.board.rotate_piece(new_object, "RIGHT")
+                            suc = self.board.rotate_piece(new_object, "RIGHT")
                         elif event.key == pygame.K_q:
-                            self.board.rotate_piece(new_object, "LEFT")
+                            suc = self.board.rotate_piece(new_object, "LEFT")
 
 
                 """if current_time - last_drop_time > drop_interval:
