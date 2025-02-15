@@ -52,10 +52,15 @@ class Board:
             else:
                 pygame.draw.line(surface, COLORS["WHITE"], (0, y_cor), (SCREEN_WIDTH, y_cor), 1)
 
-    def first_print(self, pygame, surface):
+    def print_board(self, pygame, surface, object = None):
         surface.fill(COLORS["BLACK"])
         self.print_edges(pygame, surface)
+        if object is not None:
+            object.print(self.board, pygame, surface)
+
         self.print_lines(pygame, surface)
+        # Update the display
+        pygame.display.flip()
 
 
     def is_collision(self, positions):
@@ -153,7 +158,7 @@ class Board:
             else:
                 return False
 
-    def lock_piece(self, object):
+    def lock_object(self, object):
         for x, y in object.pos:
             self.board[y][x].accessible = False
             self.board[y][x].color = object.color
@@ -179,7 +184,7 @@ class Board:
 
 
                     # Print after each line clearance
-                    self.first_print(pygame, surface)
+                    self.print_board(pygame, surface)
                     pygame.display.flip()
                     time.sleep(1)
 
