@@ -20,6 +20,6 @@ class Object(ABC):
                 if self.structure[y][x]:
                     self.pos.append((start_x + x, y + 1))
 
-        center_pos = (start_x + 1, 2)
+        self.center_pos = (start_x + 1, 2)
 
 
