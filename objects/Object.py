@@ -4,10 +4,11 @@ from screen_setup import SCREEN_WIDTH, SCREEN_HEIGHT, x_boxes, y_boxes
 
 
 class Object(ABC):
-    structure = [[ False for j in range(3)] for i in range(4)]
-    pos = []
-    center_pos = (None, None)
-    color = None
+    def __init__(self):
+        self.structure = [[False for j in range(3)] for i in range(4)]
+        self.pos = []
+        self.center_pos = (None, None)
+        self.color = None
 
     def print(self, board, pygame, surface):
         for x, y in self.pos:
