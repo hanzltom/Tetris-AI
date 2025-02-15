@@ -45,9 +45,12 @@ class Board:
             x_cor = SCREEN_WIDTH / 11 * i
             pygame.draw.line(surface, COLORS["WHITE"], (x_cor, 0), (x_cor, SCREEN_HEIGHT), 1)
         # Horizontal lines
-        for i in range(y_boxes):
+        for num, i in enumerate(range(y_boxes)):
             y_cor = SCREEN_HEIGHT / 21 * i
-            pygame.draw.line(surface, COLORS["WHITE"], (0, y_cor), (SCREEN_WIDTH, y_cor), 1)
+            if num == 5:
+                pygame.draw.line(surface, COLORS["RED"], (0, y_cor), (SCREEN_WIDTH, y_cor), 1)
+            else:
+                pygame.draw.line(surface, COLORS["WHITE"], (0, y_cor), (SCREEN_WIDTH, y_cor), 1)
 
     def first_print(self, pygame, surface):
         surface.fill(COLORS["BLACK"])
@@ -165,6 +168,7 @@ class Board:
                         self.board[y][x].accessible = True
                         self.board[y][x].color = "BLACK"
 
+                    #Drop above boxes after cleaning of the line
                     for above_y in reversed(range(1, y)):
                         for x in range(1, x_boxes - 1):
                             if self.board[above_y + 1][x].is_accessible():
@@ -181,3 +185,10 @@ class Board:
 
         except Exception as e:
             print(f"Error in clear line: {e}")
+
+    def is_out(self) -> bool:
+        for x in range(1, x_boxes - 1):
+            if not self.board[4][x].is_accessible():
+                return True
+
+        return False

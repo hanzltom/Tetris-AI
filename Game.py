@@ -20,6 +20,9 @@ class Game:
             while running:
                 current_time = pygame.time.get_ticks()
 
+                if self.board.is_out():
+                    break
+
                 if create_new_object:
                     create_new_object = False
                     print("Finding new object")
@@ -41,13 +44,10 @@ class Game:
                     elif event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_a:
                             suc = self.board.move_object(new_object, "LEFT")
-                            print(f"Move left {suc}")
                         elif event.key == pygame.K_d:
                             suc = self.board.move_object(new_object, "RIGHT")
-                            print(f"Move right {suc}")
                         elif event.key == pygame.K_s:
                             suc = self.board.move_object(new_object, "DOWN")
-                            print(f"Move down {suc}")
                         elif event.key == pygame.K_e:
                             suc = self.board.rotate_piece(new_object, "RIGHT")
                         elif event.key == pygame.K_q:
@@ -60,6 +60,10 @@ class Game:
                         self.board.clear_lines(pygame, surface)
                         create_new_object = True
                     last_drop_time = current_time
+
+
+
+            input("Enter for exit")
 
 
         except Exception as e:
