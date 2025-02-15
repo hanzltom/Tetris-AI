@@ -53,8 +53,8 @@ class Board:
         self.print_edges(pygame, surface)
         self.print_lines(pygame, surface)
 
-    def is_collision(self, new_object):
-        for coord in new_object.pos:
+    def is_collision(self, positions):
+        for coord in positions:
             if not self.board[coord[1]][coord[0]].is_accessible():
                 return True
 
@@ -64,7 +64,7 @@ class Board:
         print(f"Vybrano: {type(new_object)}")
         new_object.set_pos()
         print(f"Pozice: {new_object.pos}")
-        if not self.is_collision(new_object):
+        if not self.is_collision(new_object.pos):
             return True, new_object
         else:
             return False, new_object
@@ -72,64 +72,79 @@ class Board:
 
     def move_object(self, object, move : str) -> bool:
         if move == "LEFT":
-            for x, y in object.pos:
-                if not self.board[y][x - 1].is_accessible():
-                    return False
-
             new_pos = []
-            object.center_pos = (object.center_pos[0] - 1, object.center_pos[1])
+            new_center_pos = (object.center_pos[0] - 1, object.center_pos[1])
             for x, y in object.pos:
                 new_pos.append((x - 1, y))
 
-            object.pos = new_pos
-            return True
+            if not self.is_collision(new_pos):
+                object.pos = new_pos
+                object.center_pos = new_center_pos
+                return True
+            else:
+                return False
 
         elif move == "RIGHT":
-            for x, y in object.pos:
-                if not self.board[y][x + 1].is_accessible():
-                    return False
-
             new_pos = []
-            object.center_pos = (object.center_pos[0] + 1, object.center_pos[1])
+            new_center_pos = (object.center_pos[0] + 1, object.center_pos[1])
             for x, y in object.pos:
                 new_pos.append((x + 1, y))
 
-            object.pos = new_pos
-            return True
+            if not self.is_collision(new_pos):
+                object.pos = new_pos
+                object.center_pos = new_center_pos
+                return True
+            else:
+                return False
 
         elif move == "DOWN":
-            for x, y in object.pos:
-                if not self.board[y + 1][x].is_accessible():
-                    return False
-
             new_pos = []
-            object.center_pos = (object.center_pos[0], object.center_pos[1] + 1)
+            new_center_pos = (object.center_pos[0], object.center_pos[1] + 1)
             for x, y in object.pos:
                 new_pos.append((x, y + 1))
 
-            object.pos = new_pos
-            return True
+            if not self.is_collision(new_pos):
+                object.pos = new_pos
+                object.center_pos = new_center_pos
+                return True
+            else:
+                return False
 
         else:
             raise ValueError(f"Bad move side {move}")
 
-    def rotate_piece(self, object, move):
+    def rotate_piece(self, object, move) -> bool:
         if move == "LEFT":
             new_pos = []
+            new_center_pos = (None, None)
             for x, y in object.pos:
                 x2 = y + object.center_pos[0] - object.center_pos[1]
                 y2 = object.center_pos[0] + object.center_pos[1] - x
                 new_pos.append((x2, y2))
+                if (x,y) == object.center_pos:
+                    new_center_pos = (x2, y2)
 
-            object.pos = new_pos
+            if not self.is_collision(new_pos):
+                object.pos = new_pos
+                object.center_pos = new_center_pos
+                return True
+            else:
+                return False
 
         elif move == "RIGHT":
             new_pos = []
+            new_center_pos = (None, None)
             for x, y in object.pos:
                 x2 = object.center_pos[0] + object.center_pos[1] - y
                 y2 = x + object.center_pos[1] - object.center_pos[0]
                 new_pos.append((x2, y2))
+                if (x,y) == object.center_pos:
+                    new_center_pos = (x2, y2)
 
-            object.pos = new_pos
-        else:
-            raise ValueError(f"Bad rotation {move}")
+            if not self.is_collision(new_pos):
+                object.pos = new_pos
+                object.center_pos = new_center_pos
+                return True
+            else:
+                return False
+
