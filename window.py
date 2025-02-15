@@ -1,10 +1,8 @@
 import pygame
 import sys
 import os
-
 from Game import Game
 from screen_setup import SCREEN_WIDTH, SCREEN_HEIGHT
-from Board import Board
 
 
 # Initialize Pygame
@@ -20,7 +18,6 @@ pygame.display.set_caption("Tetris")
 game = Game(pygame, screen)
 game.loop(pygame, screen)
 
-print("Bye")
-# Quit Pygame
+# Quit Game
 pygame.quit()
 sys.exit()
