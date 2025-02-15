@@ -11,7 +11,6 @@ class Game:
 
     def loop(self, pygame, surface):
         try:
-            input("Press Enter to continue")
             clock = pygame.time.Clock()  # To control the frame rate
             drop_interval = 1500  # Time in milliseconds for automatic downward movement
             last_drop_time = pygame.time.get_ticks()
@@ -57,8 +56,8 @@ class Game:
 
                 if current_time - last_drop_time > drop_interval:
                     if not self.board.move_object(new_object, "DOWN"):
-                        self.board.lock_piece()
-                        self.board.clear_lines()
+                        self.board.lock_piece(new_object)
+                        self.board.clear_lines(pygame, surface)
                         create_new_object = True
                     last_drop_time = current_time
 

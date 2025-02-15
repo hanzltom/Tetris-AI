@@ -13,6 +13,7 @@ from Field import Field
 from Position import Position
 from colors import COLORS
 import random
+import time
 
 object_list = [ObjectI, ObjectJ, ObjectL, ObjectO, ObjectS, ObjectT, ObjectZ]
 
@@ -52,6 +53,7 @@ class Board:
         surface.fill(COLORS["BLACK"])
         self.print_edges(pygame, surface)
         self.print_lines(pygame, surface)
+
 
     def is_collision(self, positions):
         for coord in positions:
@@ -148,3 +150,34 @@ class Board:
             else:
                 return False
 
+    def lock_piece(self, object):
+        for x, y in object.pos:
+            self.board[y][x].accessible = False
+            self.board[y][x].color = object.color
+
+    def clear_lines(self, pygame, surface):
+        try:
+            for y in range(1, y_boxes - 1): # Skip checking edges
+
+                if all(not self.board[y][x].is_accessible() for x in range(1, x_boxes - 1)):
+                    # Clear the row
+                    for x in range(1, x_boxes - 1):
+                        self.board[y][x].accessible = True
+                        self.board[y][x].color = "BLACK"
+
+                    for above_y in reversed(range(1, y)):
+                        for x in range(1, x_boxes - 1):
+                            if self.board[above_y + 1][x].is_accessible():
+                                self.board[above_y + 1][x].accessible = self.board[above_y][x].accessible
+                                self.board[above_y + 1][x].color = self.board[above_y][x].color
+                                self.board[above_y][x].color = "BLACK"
+                                self.board[above_y][x].accessible = True
+
+
+                    self.first_print(pygame, surface)
+                    pygame.display.flip()
+                    time.sleep(1)
+
+
+        except Exception as e:
+            print(f"Error in clear line: {e}")
