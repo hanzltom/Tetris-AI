@@ -13,7 +13,7 @@ class Game:
         try:
             input("Press Enter to continue")
             clock = pygame.time.Clock()  # To control the frame rate
-            drop_interval = 500  # Time in milliseconds for automatic downward movement
+            drop_interval = 1500  # Time in milliseconds for automatic downward movement
             last_drop_time = pygame.time.get_ticks()
             running = True
             new_object = None
@@ -55,13 +55,13 @@ class Game:
                             suc = self.board.rotate_piece(new_object, "LEFT")
 
 
-                """if current_time - last_drop_time > drop_interval:
-                    if not self.board.move_piece_down():  # Try to move piece down
-                        self.board.lock_piece()  # Lock piece if it can't move
-                        self.board.clear_lines()  # Clear completed lines
-                        self.board.spawn_new_piece()  # Spawn a new piece
+                if current_time - last_drop_time > drop_interval:
+                    if not self.board.move_object(new_object, "DOWN"):
+                        self.board.lock_piece()
+                        self.board.clear_lines()
+                        create_new_object = True
                     last_drop_time = current_time
-                """
+
 
         except Exception as e:
             print(f"Error: {e}")
