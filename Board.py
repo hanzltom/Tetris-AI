@@ -15,10 +15,17 @@ from colors import COLORS
 import random
 import time
 
+# List of all available objects
 object_list = [ObjectI, ObjectJ, ObjectL, ObjectO, ObjectS, ObjectT, ObjectZ]
 
 class Board:
+    """
+    Class Board representing the game board
+    """
     def __init__(self):
+        """
+        Constructor creating the game board
+        """
         self.board = [[]]
 
         for y in range(y_boxes):
@@ -36,44 +43,74 @@ class Board:
                     Field(Position( x, y, (x_cor, y_cor), (SCREEN_WIDTH / x_boxes, SCREEN_HEIGHT / y_boxes)), True))
 
 
-    def print_edges(self, pygame, screen):
-        [self.board[y][x].print(pygame, screen) for y in range(y_boxes) for x in range(x_boxes)]
+    def print_edges(self, pygame, surface):
+        """
+        Method to print the edges of the game board
+        :param pygame: Pygame instance
+        :param surface: Surface instance
+        :return: None
+        """
+        [self.board[y][x].print(pygame, surface) for y in range(y_boxes) for x in range(x_boxes)]
 
     def print_lines(self, pygame, surface):
+        """
+        Method to print the lines of the game board
+        :param pygame: Pygame instance
+        :param surface: Surface instance
+        :return: None
+        """
         # Vertical lines
         for i in range(x_boxes):
-            x_cor = SCREEN_WIDTH / 11 * i
+            x_cor = SCREEN_WIDTH / x_boxes * i
             pygame.draw.line(surface, COLORS["WHITE"], (x_cor, 0), (x_cor, SCREEN_HEIGHT), 1)
         # Horizontal lines
         for num, i in enumerate(range(y_boxes)):
-            y_cor = SCREEN_HEIGHT / 21 * i
-            if num == 5:
+            y_cor = SCREEN_HEIGHT / y_boxes * i
+            if num == 5: # Draw red line representing outer zone
                 pygame.draw.line(surface, COLORS["RED"], (0, y_cor), (SCREEN_WIDTH, y_cor), 1)
             else:
                 pygame.draw.line(surface, COLORS["WHITE"], (0, y_cor), (SCREEN_WIDTH, y_cor), 1)
 
     def print_board(self, pygame, surface, object = None):
-        surface.fill(COLORS["BLACK"])
+        """
+        Method managing printing process
+        :param pygame: Pygame instance
+        :param surface: Surface instance
+        :param object: object to be printed
+        :return: None
+        """
+        surface.fill(COLORS["BLACK"]) #Reset surface to black color
         self.print_edges(pygame, surface)
         if object is not None:
             object.print(self.board, pygame, surface)
 
         self.print_lines(pygame, surface)
+
         # Update the display
         pygame.display.flip()
 
 
-    def is_collision(self, positions):
+    def is_collision(self, positions) -> bool:
+        """
+        Method to check if collision happened
+        :param positions: position of the object
+        :return: bool
+        """
         for coord in positions:
             if not self.board[coord[1]][coord[0]].is_accessible():
                 return True
+        return False
 
     def create_object(self):
-        chosen_object = random.choice(object_list)
-        new_object = chosen_object()
-        print(f"Vybrano: {type(new_object)}")
-        new_object.set_pos()
-        print(f"Pozice: {new_object.pos}")
+        """
+        Method to create the object
+        :return: None
+        """
+        chosen_object = random.choice(object_list) # Pick random object of the list
+        new_object = chosen_object() # Make an instance of the object
+
+        new_object.set_pos() # Set position of the object on the board
+
         if not self.is_collision(new_object.pos):
             return True, new_object
         else:
@@ -81,13 +118,19 @@ class Board:
 
 
     def move_object(self, object, move : str) -> bool:
+        """
+        Method to move the object
+        :param object: Object instance
+        :param move: Move type
+        :return: bool - success of the move
+        """
         if move == "LEFT":
             new_pos = []
             new_center_pos = (object.center_pos[0] - 1, object.center_pos[1])
             for x, y in object.pos:
                 new_pos.append((x - 1, y))
 
-            if not self.is_collision(new_pos):
+            if not self.is_collision(new_pos): # Set new values if no collision
                 object.pos = new_pos
                 object.center_pos = new_center_pos
                 return True
@@ -100,7 +143,7 @@ class Board:
             for x, y in object.pos:
                 new_pos.append((x + 1, y))
 
-            if not self.is_collision(new_pos):
+            if not self.is_collision(new_pos): # Set new values if no collision
                 object.pos = new_pos
                 object.center_pos = new_center_pos
                 return True
@@ -113,7 +156,7 @@ class Board:
             for x, y in object.pos:
                 new_pos.append((x, y + 1))
 
-            if not self.is_collision(new_pos):
+            if not self.is_collision(new_pos): # Set new values if no collision
                 object.pos = new_pos
                 object.center_pos = new_center_pos
                 return True
@@ -124,17 +167,24 @@ class Board:
             raise ValueError(f"Bad move side {move}")
 
     def rotate_piece(self, object, move) -> bool:
+        """
+        Method to rotate the object
+        :param object: Object instance
+        :param move: Move type
+        :return: bool - success of the move
+        """
         if move == "LEFT":
             new_pos = []
             new_center_pos = (None, None)
             for x, y in object.pos:
+                # Formula for the left rotation
                 x2 = y + object.center_pos[0] - object.center_pos[1]
                 y2 = object.center_pos[0] + object.center_pos[1] - x
                 new_pos.append((x2, y2))
                 if (x,y) == object.center_pos:
                     new_center_pos = (x2, y2)
 
-            if not self.is_collision(new_pos):
+            if not self.is_collision(new_pos): # Set new values if no collision
                 object.pos = new_pos
                 object.center_pos = new_center_pos
                 return True
@@ -145,13 +195,14 @@ class Board:
             new_pos = []
             new_center_pos = (None, None)
             for x, y in object.pos:
+                # Formula for the right rotation
                 x2 = object.center_pos[0] + object.center_pos[1] - y
                 y2 = x + object.center_pos[1] - object.center_pos[0]
                 new_pos.append((x2, y2))
                 if (x,y) == object.center_pos:
                     new_center_pos = (x2, y2)
 
-            if not self.is_collision(new_pos):
+            if not self.is_collision(new_pos): # Set new values if no collision
                 object.pos = new_pos
                 object.center_pos = new_center_pos
                 return True
@@ -159,11 +210,22 @@ class Board:
                 return False
 
     def lock_object(self, object):
+        """
+        Method to lock the object and secure it on the board
+        :param object: Object instance
+        :return: None
+        """
         for x, y in object.pos:
             self.board[y][x].accessible = False
             self.board[y][x].color = object.color
 
     def clear_lines(self, pygame, surface):
+        """
+        Method to clear the lines of the game board
+        :param pygame: Pygame instance
+        :param surface: Surface instance
+        :return: None
+        """
         try:
             for y in range(1, y_boxes - 1): # Skip checking edges
 
@@ -193,6 +255,10 @@ class Board:
             print(f"Error in clear line: {e}")
 
     def is_out(self) -> bool:
+        """
+        Method to check if the object is out of the game zone
+        :return: bool
+        """
         for x in range(1, x_boxes - 1):
             if not self.board[4][x].is_accessible():
                 return True
