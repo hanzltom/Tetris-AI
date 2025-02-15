@@ -111,15 +111,19 @@ class Board:
             return True
 
         else:
-            raise ValueError(f"Bad move {move}")
+            raise ValueError(f"Bad move side {move}")
 
     def rotate_piece(self, object, move):
         if move == "LEFT":
             new_pos = []
             for x, y in object.pos:
-                x2 = y +
-                y2 =
+                x2 = y + object.center_pos[0] - object.center_pos[1]
+                y2 = object.center_pos[0] + object.center_pos[1] - x
+                new_pos.append((x2, y2))
+
+            object.pos = new_pos
+
         elif move == "RIGHT":
             pass
         else:
-            raise ValueError(f"Bad move {move}")
+            raise ValueError(f"Bad rotation {move}")
