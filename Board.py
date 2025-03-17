@@ -216,8 +216,8 @@ class Board:
         :return: None
         """
         for x, y in object.pos:
-            self.board[y][x].accessible = False
-            self.board[y][x].color = object.color
+            self.board[y][x].set_accessible(False)
+            self.board[y][x].set_color(object.color)
 
     def clear_lines(self, pygame, surface):
         """
@@ -232,22 +232,21 @@ class Board:
                 if all(not self.board[y][x].is_accessible() for x in range(1, x_boxes - 1)):
                     # Clear the row
                     for x in range(1, x_boxes - 1):
-                        self.board[y][x].accessible = True
-                        self.board[y][x].color = "BLACK"
+                        self.board[y][x].set_accessible(True)
+                        self.board[y][x].set_color("BLACK")
 
                     #Drop above boxes after cleaning of the line
                     for above_y in reversed(range(1, y)):
                         for x in range(1, x_boxes - 1):
                             if self.board[above_y + 1][x].is_accessible():
-                                self.board[above_y + 1][x].accessible = self.board[above_y][x].accessible
-                                self.board[above_y + 1][x].color = self.board[above_y][x].color
-                                self.board[above_y][x].color = "BLACK"
-                                self.board[above_y][x].accessible = True
+                                self.board[above_y + 1][x].set_accessible(self.board[above_y][x].is_accessible())
+                                self.board[above_y + 1][x].set_color(self.board[above_y][x].color)
+                                self.board[above_y][x].set_color("BLACK")
+                                self.board[above_y][x].set_accessible(True)
 
 
                     # Print after each line clearance
                     self.print_board(pygame, surface)
-                    pygame.display.flip()
                     time.sleep(1)
 
 
