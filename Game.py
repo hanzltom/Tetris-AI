@@ -1,6 +1,8 @@
 from Board import Board
 from colors import COLORS
 from screen_setup import *
+from Trainer import Trainer
+import time
 
 class Game:
     """
@@ -15,6 +17,7 @@ class Game:
         self.board = Board()
         self.board.print_board(pygame, surface)
         pygame.display.flip()
+        self.trainer = Trainer()
 
 
     def loop(self, pygame, surface):
@@ -49,17 +52,21 @@ class Game:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         running = False
-                    elif event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_a:
-                            self.board.move_object(new_object, "LEFT")
-                        elif event.key == pygame.K_d:
-                            self.board.move_object(new_object, "RIGHT")
-                        elif event.key == pygame.K_s:
-                            self.board.move_object(new_object, "DOWN")
-                        elif event.key == pygame.K_e:
-                            self.board.rotate_piece(new_object, "RIGHT")
-                        elif event.key == pygame.K_q:
-                            self.board.rotate_piece(new_object, "LEFT")
+
+                # Allow multiple moves in one frame
+                for _ in range(5):  # Adjust the number of moves per frame
+                    action = self.trainer.train(self.board.board, new_object)
+                    if action == 0:
+                        self.board.move_object(new_object, "LEFT")
+                    elif action == 1:
+                        self.board.move_object(new_object, "RIGHT")
+                    elif action == 2:
+                        self.board.move_object(new_object, "DOWN")
+                    elif action == 3:
+                        self.board.rotate_piece(new_object, "RIGHT")
+                    elif action == 4:
+                        self.board.rotate_piece(new_object, "LEFT")
+                    time.sleep(0.1)
 
                 # If enough time passed, drop the object
                 if current_time - last_drop_time > drop_interval:
