@@ -33,8 +33,11 @@ class Game:
             EPSILON = 1
             for episode in range(episodes):
                 new_object = None
+                state = None
                 running = True
                 create_new_object = True # if needed to create new object
+                done = False
+                total_reward = 0
                 while running:
 
                     if self.board.is_out(): # if there is any object outside of zone
@@ -56,12 +59,10 @@ class Game:
                     else:
                         action = self.trainer.get_action(state)
 
-                    reward, done, lock_object = self.board.apply_action(new_object, action)
+                    reward, done, locked_object = self.board.apply_action(new_object, action, pygame, surface)
                     next_state = board_to_tensor(self.board.board, new_object)
 
-                    if lock_object:
-                        self.board.lock_object(new_object)  # Lock object on the board
-                        self.board.clear_lines(pygame, surface)  # Clear full lines
+                    if locked_object:
                         create_new_object = True
 
 
