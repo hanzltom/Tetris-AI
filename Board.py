@@ -263,3 +263,20 @@ class Board:
                 return True
 
         return False
+
+    def apply_action(self, new_object, action):
+        if action == 0:
+            self.move_object(new_object, "LEFT")
+            return False
+        elif action == 1:
+            self.move_object(new_object, "RIGHT")
+            return False
+        elif action == 2:
+            if not self.move_object(new_object, "DOWN"):
+                return True
+        elif action == 3:
+            self.rotate_piece(new_object, "RIGHT")
+            return False
+        elif action == 4:
+            self.rotate_piece(new_object, "LEFT")
+            return False
