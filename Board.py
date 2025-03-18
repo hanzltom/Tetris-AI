@@ -227,10 +227,12 @@ class Board:
         :return: None
         """
         try:
+            reward = 0
             for y in range(1, y_boxes - 1): # Skip checking edges
 
                 if all(not self.board[y][x].is_accessible() for x in range(1, x_boxes - 1)):
                     # Clear the row
+                    reward += 1
                     for x in range(1, x_boxes - 1):
                         self.board[y][x].set_accessible(True)
                         self.board[y][x].set_color("BLACK")
@@ -249,6 +251,8 @@ class Board:
                     self.print_board(pygame, surface)
                     time.sleep(1)
 
+            return reward
+
 
         except Exception as e:
             print(f"Error in clear line: {e}")
@@ -264,19 +268,44 @@ class Board:
 
         return False
 
-    def apply_action(self, new_object, action):
+    def is_at_bottom(self, object) -> bool:
+        new_pos = []
+        new_center_pos = (object.center_pos[0], object.center_pos[1] + 1)
+        for x, y in object.pos:
+            new_pos.append((x, y + 1))
+
+        if self.is_collision(new_pos):  # Set new values if no collision
+            return True
+        else:
+            return False
+
+    def apply_action(self, new_object, action, pygame, surface):
         if action == 0:
             self.move_object(new_object, "LEFT")
-            return False
+            if self.is_at_bottom(new_object):
+                self.lock_object(new_object)  # Lock object on the board
+                reward = self.clear_lines(pygame, surface)
+
         elif action == 1:
             self.move_object(new_object, "RIGHT")
-            return False
+            if self.is_at_bottom(new_object):
+                self.lock_object(new_object)  # Lock object on the board
+                reward = self.clear_lines(pygame, surface)
+
         elif action == 2:
-            if not self.move_object(new_object, "DOWN"):
-                return True
+            self.move_object(new_object, "DOWN")
+            if self.is_at_bottom(new_object):
+                self.lock_object(new_object)  # Lock object on the board
+                reward = self.clear_lines(pygame, surface)
+
         elif action == 3:
             self.rotate_piece(new_object, "RIGHT")
-            return False
+            if self.is_at_bottom(new_object):
+                self.lock_object(new_object)  # Lock object on the board
+                reward = self.clear_lines(pygame, surface)
+
         elif action == 4:
             self.rotate_piece(new_object, "LEFT")
-            return False
+            if self.is_at_bottom(new_object):
+                self.lock_object(new_object)  # Lock object on the board
+                reward = self.clear_lines(pygame, surface)
