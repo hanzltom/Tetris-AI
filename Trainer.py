@@ -10,8 +10,7 @@ class Trainer:
     def __init__(self):
         self.model = DQN()
 
-    def train(self, board, object):
-        state_tensor = board_to_tensor(board, object)
+    def get_action(self, state_tensor):
         q_values = self.model(state_tensor)  # Predict Q-values
 
         action = torch.argmax(q_values).item()
