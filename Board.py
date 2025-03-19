@@ -283,35 +283,50 @@ class Board:
             self.move_object(new_object, "LEFT")
             if self.is_at_bottom(new_object):
                 self.lock_object(new_object)  # Lock object on the board
-                reward = self.clear_lines(pygame, surface)
+                reward_lines = self.clear_lines(pygame, surface)
+                reward_lines *= 20
+                _, reward_depth = new_object.center_pos
+                reward = reward_lines + reward_depth - 1
                 return reward, True
 
         elif action == 1:
             self.move_object(new_object, "RIGHT")
             if self.is_at_bottom(new_object):
                 self.lock_object(new_object)  # Lock object on the board
-                reward = self.clear_lines(pygame, surface)
+                reward_lines = self.clear_lines(pygame, surface)
+                reward_lines *= 20
+                _, reward_depth = new_object.center_pos
+                reward = reward_lines + reward_depth - 1
                 return reward, True
 
         elif action == 2:
             self.move_object(new_object, "DOWN")
             if self.is_at_bottom(new_object):
                 self.lock_object(new_object)  # Lock object on the board
-                reward = self.clear_lines(pygame, surface)
+                reward_lines = self.clear_lines(pygame, surface)
+                reward_lines *= 20
+                _, reward_depth = new_object.center_pos
+                reward = reward_lines + reward_depth - 1
                 return reward, True
 
         elif action == 3:
             self.rotate_piece(new_object, "RIGHT")
             if self.is_at_bottom(new_object):
                 self.lock_object(new_object)  # Lock object on the board
-                reward = self.clear_lines(pygame, surface)
+                reward_lines = self.clear_lines(pygame, surface)
+                reward_lines *= 20
+                _, reward_depth = new_object.center_pos
+                reward = reward_lines + reward_depth - 1
                 return reward, True
 
         elif action == 4:
             self.rotate_piece(new_object, "LEFT")
             if self.is_at_bottom(new_object):
                 self.lock_object(new_object)  # Lock object on the board
-                reward = self.clear_lines(pygame, surface)
+                reward_lines = self.clear_lines(pygame, surface)
+                reward_lines *= 20
+                _, reward_depth = new_object.center_pos
+                reward = reward_lines + reward_depth - 1
                 return reward, True
 
         return 0, False
