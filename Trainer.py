@@ -1,9 +1,12 @@
+from random import random
+
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from DQN import DQN
 import screen_setup
+import random
 
 
 class Trainer:
@@ -14,8 +17,33 @@ class Trainer:
         q_values = self.model(state_tensor)  # Predict Q-values
 
         action = torch.argmax(q_values).item()
-        print(action)
         return action
+
+    def train(self, replay_memory, BATCH_SIZE, GAMMA):
+        optimizer = optim.Adam(self.model.parameters(), lr=0.001)
+
+        if len(replay_memory) < BATCH_SIZE:
+            return # Not enough data in memory
+
+        batch = random.sample(replay_memory, BATCH_SIZE)
+        states, actions, rewards, next_states, dones = zip(*batch)
+
+        states = torch.stack(states)
+        next_states = torch.stack(next_states)
+        actions = torch.tensor(actions, dtype=torch.long).unsqueeze(1)
+        rewards = torch.tensor(rewards, dtype=torch.float32)
+        dones = torch.tensor(dones, dtype=torch.float32)
+
+        with torch.no_grad():
+            target_q_values = rewards + GAMMA * torch.max(self.model(next_states), dim=1)[0] * (1 - dones)
+
+        predicted_q_values = self.model(states).gather(1, actions).squeeze(1)
+
+        # Compute loss and update model
+        loss = torch.nn.MSELoss()(predicted_q_values, target_q_values)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
 
 def board_to_tensor(board, object = None):
     if object:
