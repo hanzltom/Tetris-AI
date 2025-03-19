@@ -6,9 +6,16 @@ import time
 import numpy as np
 import random
 from collections import deque
+import torch
 
 MEMORY_SIZE = 10000
 BATCH_SIZE = 64
+GAMMA = 0.99
+
+EPSILON = 1.0
+EPSILON_DECAY = 0.995
+EPSILON_MIN = 0.05
+EPISODES = 10000
 
 replay_memory = deque(maxlen=MEMORY_SIZE)  # Store (state, action, reward, next_state, done)
 
@@ -37,9 +44,10 @@ class Game:
         :return: None
         """
         try:
-            episodes = 1000
-            EPSILON = 1
-            for episode in range(episodes):
+            EPSILON = 1.0
+            sum_of_rewards = 0
+            for episode in range(EPISODES):
+                print(f"Episode: {episode} out of {EPISODES}, reward: {sum_of_rewards}")
                 new_object = None
                 state = None
                 running = True
@@ -75,9 +83,20 @@ class Game:
 
                     replay_memory.append((state, action, reward, next_state, done))
 
+                    self.trainer.train(replay_memory, BATCH_SIZE, GAMMA)
 
+                    state = next_state
+                    total_reward += reward
+                    #time.sleep(0.01)
 
+                if EPSILON > EPSILON_MIN:
+                    EPSILON *= EPSILON_DECAY
 
+                self.board = Board() # reset board for new episodes
+                sum_of_rewards += total_reward
+
+            torch.save(self.trainer.model.state_dict(), "tetris_dqn.pth")
         except Exception as e:
             print(f"Error: {e}")
+            torch.save(self.trainer.model.state_dict(), "tetris_dqn.pth")
 
