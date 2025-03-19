@@ -4,6 +4,14 @@ from screen_setup import *
 from Trainer import Trainer, board_to_tensor
 import time
 import numpy as np
+import random
+from collections import deque
+
+MEMORY_SIZE = 10000
+BATCH_SIZE = 64
+
+replay_memory = deque(maxlen=MEMORY_SIZE)  # Store (state, action, reward, next_state, done)
+
 
 class Game:
     """
@@ -59,11 +67,14 @@ class Game:
                     else:
                         action = self.trainer.get_action(state)
 
-                    reward, done, locked_object = self.board.apply_action(new_object, action, pygame, surface)
+                    reward, create_new_object = self.board.apply_action(new_object, action, pygame, surface)
                     next_state = board_to_tensor(self.board.board, new_object)
 
-                    if locked_object:
-                        create_new_object = True
+                    if self.board.is_out():  # if there is any object outside of zone
+                        done = True
+
+                    replay_memory.append((state, action, reward, next_state, done))
+
 
 
 
