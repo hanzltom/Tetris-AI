@@ -270,7 +270,6 @@ class Board:
 
     def is_at_bottom(self, object) -> bool:
         new_pos = []
-        new_center_pos = (object.center_pos[0], object.center_pos[1] + 1)
         for x, y in object.pos:
             new_pos.append((x, y + 1))
 
@@ -285,27 +284,34 @@ class Board:
             if self.is_at_bottom(new_object):
                 self.lock_object(new_object)  # Lock object on the board
                 reward = self.clear_lines(pygame, surface)
+                return reward, True
 
         elif action == 1:
             self.move_object(new_object, "RIGHT")
             if self.is_at_bottom(new_object):
                 self.lock_object(new_object)  # Lock object on the board
                 reward = self.clear_lines(pygame, surface)
+                return reward, True
 
         elif action == 2:
             self.move_object(new_object, "DOWN")
             if self.is_at_bottom(new_object):
                 self.lock_object(new_object)  # Lock object on the board
                 reward = self.clear_lines(pygame, surface)
+                return reward, True
 
         elif action == 3:
             self.rotate_piece(new_object, "RIGHT")
             if self.is_at_bottom(new_object):
                 self.lock_object(new_object)  # Lock object on the board
                 reward = self.clear_lines(pygame, surface)
+                return reward, True
 
         elif action == 4:
             self.rotate_piece(new_object, "LEFT")
             if self.is_at_bottom(new_object):
                 self.lock_object(new_object)  # Lock object on the board
                 reward = self.clear_lines(pygame, surface)
+                return reward, True
+
+        return 0, False
