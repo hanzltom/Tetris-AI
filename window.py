@@ -25,4 +25,8 @@ try:
 
 except KeyboardInterrupt as e:
     print(e)
-    torch.save(game.trainer.model.state_dict(), "tetris_dqn.pth")
+    save = None
+    while save != 1 and save != 0:
+        save = int(input("Do you want to save the model? 1/0: "))
+    if save == 1:
+        torch.save(game.trainer.model.state_dict(), "tetris_dqn.pth")
