@@ -44,6 +44,7 @@ class Game:
         :return: None
         """
         try:
+
             EPSILON = 1.0
             sum_of_rewards = 0
             for episode in range(EPISODES):
@@ -95,17 +96,8 @@ class Game:
                 self.board = Board() # reset board for new episodes
                 sum_of_rewards += total_reward
 
-            save = None
-            while save != 1 and save != 0:
-                save = int(input("Do you want to save the model? 1/0"))
-            if save == 1:
-                torch.save(self.trainer.model.state_dict(), "tetris_dqn.pth")
+            torch.save(self.trainer.model.state_dict(), "tetris_dqn.pth")
 
         except Exception as e:
             print(f"Error: {e}")
-            save = None
-            while save != 1 and save != 0:
-                save = int(input("Do you want to save the model? 1/0"))
-            if save == 1:
-                torch.save(self.trainer.model.state_dict(), "tetris_dqn.pth")
 
