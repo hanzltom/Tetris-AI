@@ -284,9 +284,8 @@ class Board:
             if self.is_at_bottom(new_object):
                 self.lock_object(new_object)  # Lock object on the board
                 reward_lines = self.clear_lines(pygame, surface)
-                reward_lines *= 20
-                _, reward_depth = new_object.center_pos
-                reward = reward_lines + reward_depth - 1
+                reward_other = self.check_reward(new_object)
+                reward = reward_lines + reward_other
                 return reward, True
 
         elif action == 1:
@@ -294,9 +293,8 @@ class Board:
             if self.is_at_bottom(new_object):
                 self.lock_object(new_object)  # Lock object on the board
                 reward_lines = self.clear_lines(pygame, surface)
-                reward_lines *= 20
-                _, reward_depth = new_object.center_pos
-                reward = reward_lines + reward_depth - 1
+                reward_other = self.check_reward(new_object)
+                reward = reward_lines + reward_other
                 return reward, True
 
         elif action == 2:
@@ -304,9 +302,8 @@ class Board:
             if self.is_at_bottom(new_object):
                 self.lock_object(new_object)  # Lock object on the board
                 reward_lines = self.clear_lines(pygame, surface)
-                reward_lines *= 20
-                _, reward_depth = new_object.center_pos
-                reward = reward_lines + reward_depth - 1
+                reward_other = self.check_reward(new_object)
+                reward = reward_lines + reward_other
                 return reward, True
 
         elif action == 3:
@@ -314,9 +311,8 @@ class Board:
             if self.is_at_bottom(new_object):
                 self.lock_object(new_object)  # Lock object on the board
                 reward_lines = self.clear_lines(pygame, surface)
-                reward_lines *= 20
-                _, reward_depth = new_object.center_pos
-                reward = reward_lines + reward_depth - 1
+                reward_other = self.check_reward(new_object)
+                reward = reward_lines + reward_other
                 return reward, True
 
         elif action == 4:
@@ -324,9 +320,34 @@ class Board:
             if self.is_at_bottom(new_object):
                 self.lock_object(new_object)  # Lock object on the board
                 reward_lines = self.clear_lines(pygame, surface)
-                reward_lines *= 20
-                _, reward_depth = new_object.center_pos
-                reward = reward_lines + reward_depth - 1
+                reward_other = self.check_reward(new_object)
+                reward = reward_lines + reward_other
                 return reward, True
 
         return 0, False
+
+    def check_reward(self, object):
+        reward_gaps = self.check_gaps(object)
+        reward_height = self.check_height(object)
+        reward_tightness = self.check_tightness(object)
+        reward_closeness = self.check_closeness(object)
+        return reward_gaps + reward_height + reward_tightness + reward_closeness
+
+    def check_gaps(self, object):
+        y_max = 0
+        x_list = []
+        for x, y in object.pos:
+            if y > y_max:
+                x_list.clear()
+                y_max = y
+            if y == y_max:
+                x_list.append(x)
+
+    def check_height(self, object):
+        pass
+
+    def check_tightness(self, object):
+        pass
+
+    def check_closeness(self, object):
+        pass
