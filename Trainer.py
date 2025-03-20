@@ -12,6 +12,10 @@ import random
 class Trainer:
     def __init__(self):
         self.model = DQN()
+        if int(input("Do you want to load the model? 1/0: ")) == 1:
+            print("Using saved model")
+            self.model.load_state_dict(torch.load("tetris_dqn.pth"))
+
 
     def get_action(self, state_tensor):
         q_values = self.model(state_tensor)  # Predict Q-values
