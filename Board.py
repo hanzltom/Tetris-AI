@@ -334,6 +334,7 @@ class Board:
         return reward_gaps + reward_height + reward_tightness + reward_closeness
 
     def check_gaps(self, object):
+        reward = 0
         y_max = 0
         x_list = []
         for x, y in object.pos:
@@ -343,11 +344,64 @@ class Board:
             if y == y_max:
                 x_list.append(x)
 
+        for x in x_list:
+            if self.board[y_max + 1][x].is_accessible():
+                reward -= 0.1
+
+        if reward == 0:
+            reward = 0.1
+
+        return reward
+
     def check_height(self, object):
-        pass
+        reward = 0
+        y_max = 0
+        for _, y in object.pos:
+            if y > y_max:
+                y_max = y
+
+        if y_max >= 0.75 * y_boxes:
+            reward += 0.05
+        elif y_max <= 0.25 * y_boxes:
+            reward += 0.5
+
+        return reward
 
     def check_tightness(self, object):
-        pass
+        reward = 0
+        flag = True
+        for x, y in object.pos:
+            if self.board[y][x - 1].is_accessible() or self.board[y][x + 1].is_accessible():
+                flag = False
+                break
+
+        if flag:
+            reward += 0.2
+        return reward
 
     def check_closeness(self, object):
-        pass
+        reward = 0
+        y_max = 0
+        x_list = []
+        for x, y in object.pos:
+            if y > y_max:
+                x_list.clear()
+                y_max = y
+            if y == y_max:
+                x_list.append(x)
+
+        empty_boxes = 0
+        x_closest = x_boxes
+        for x in range(1, x_boxes - 1):
+            if self.board[y_max][x].is_accessible():
+                empty_boxes += 1
+            elif abs(x - x_list[0]) < x_closest or abs(x - x_list[len(x_list)-1]) < x_closest:
+                x_closest = min(abs(x - x_list[0]), abs(x - x_list[len(x_list)-1]))
+
+        if empty_boxes + len(x_list) == x_boxes - 2:
+            return reward
+        elif x_closest >= x_boxes - 2:
+            reward -= 0.1
+        else:
+            reward += 0.1
+        return reward
