@@ -95,8 +95,17 @@ class Game:
                 self.board = Board() # reset board for new episodes
                 sum_of_rewards += total_reward
 
-            torch.save(self.trainer.model.state_dict(), "tetris_dqn.pth")
+            save = None
+            while save != 1 and save != 0:
+                save = int(input("Do you want to save the model? 1/0"))
+            if save == 1:
+                torch.save(self.trainer.model.state_dict(), "tetris_dqn.pth")
+
         except Exception as e:
             print(f"Error: {e}")
-            torch.save(self.trainer.model.state_dict(), "tetris_dqn.pth")
+            save = None
+            while save != 1 and save != 0:
+                save = int(input("Do you want to save the model? 1/0"))
+            if save == 1:
+                torch.save(self.trainer.model.state_dict(), "tetris_dqn.pth")
 
