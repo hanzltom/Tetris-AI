@@ -283,51 +283,57 @@ class Board:
         else:
             return False
 
-    def apply_action(self, new_object, action, pygame, surface):
+    def apply_action(self, new_object, actions, pygame, surface):
         """
         Method to apply the action to the object
         :param new_object: Object to be moved
-        :param action: Action to be done
+        :param actions: Action list to be done
         :param pygame: Pygame instance
         :param surface: Surface instance
         :return:
         """
-        if action == 0: # Move LEFT
-            self.move_object(new_object, "LEFT")
-            if self.is_at_bottom(new_object):
-                self.lock_object(new_object)  # Lock object on the board
-                reward = self.get_reward(new_object, pygame, surface)
-                return reward, True
+        for action in actions:
+            if action == 0: # Move LEFT
+                if not self.move_object(new_object, "LEFT"):
+                    continue
+                if self.is_at_bottom(new_object):
+                    self.lock_object(new_object)  # Lock object on the board
+                    reward = self.get_reward(new_object, pygame, surface)
+                    return reward, True, action
 
-        elif action == 1: # Move RIGHT
-            self.move_object(new_object, "RIGHT")
-            if self.is_at_bottom(new_object):
-                self.lock_object(new_object)  # Lock object on the board
-                reward = self.get_reward(new_object, pygame, surface)
-                return reward, True
+            elif action == 1: # Move RIGHT
+                if not self.move_object(new_object, "RIGHT"):
+                    continue
+                if self.is_at_bottom(new_object):
+                    self.lock_object(new_object)  # Lock object on the board
+                    reward = self.get_reward(new_object, pygame, surface)
+                    return reward, True, action
 
-        elif action == 2: # Move DOWN
-            self.move_object(new_object, "DOWN")
-            if self.is_at_bottom(new_object):
-                self.lock_object(new_object)  # Lock object on the board
-                reward = self.get_reward(new_object, pygame, surface)
-                return reward, True
+            elif action == 2: # Move DOWN
+                if not self.move_object(new_object, "DOWN"):
+                    continue
+                if self.is_at_bottom(new_object):
+                    self.lock_object(new_object)  # Lock object on the board
+                    reward = self.get_reward(new_object, pygame, surface)
+                    return reward, True, action
 
-        elif action == 3: # Rotate RIGHT
-            self.rotate_piece(new_object, "RIGHT")
-            if self.is_at_bottom(new_object):
-                self.lock_object(new_object)  # Lock object on the board
-                reward = self.get_reward(new_object, pygame, surface)
-                return reward, True
+            elif action == 3: # Rotate RIGHT
+                if not self.rotate_piece(new_object, "RIGHT"):
+                    continue
+                if self.is_at_bottom(new_object):
+                    self.lock_object(new_object)  # Lock object on the board
+                    reward = self.get_reward(new_object, pygame, surface)
+                    return reward, True, action
 
-        elif action == 4: # Rotate LEFT
-            self.rotate_piece(new_object, "LEFT")
-            if self.is_at_bottom(new_object):
-                self.lock_object(new_object)  # Lock object on the board
-                reward = self.get_reward(new_object, pygame, surface)
-                return reward, True
+            elif action == 4: # Rotate LEFT
+                if not self.rotate_piece(new_object, "LEFT"):
+                    continue
+                if self.is_at_bottom(new_object):
+                    self.lock_object(new_object)  # Lock object on the board
+                    reward = self.get_reward(new_object, pygame, surface)
+                    return reward, True, action
 
-        return 0, False
+            return 0, False, action
 
     def get_reward(self, object, pygame, surface):
         """
