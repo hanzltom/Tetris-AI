@@ -7,6 +7,7 @@ import numpy as np
 import random
 from collections import deque
 import torch
+import more_itertools as mit
 
 MEMORY_SIZE = 10000
 BATCH_SIZE = 64
@@ -72,12 +73,12 @@ class Game:
 
                     # Select action using epsilon greedy policy
                     if np.random.rand() < EPSILON:
-                        action = np.random.randint(0, 5)  # Random action
+                        actions = list(mit.random_permutation(range(5))) # Get random permutation
                     else:
-                        action = self.trainer.get_action(state)
+                        actions = self.trainer.get_action(state)
 
                     # Move the object and get the reward
-                    reward, create_new_object = self.board.apply_action(new_object, action, pygame, surface)
+                    reward, create_new_object, action = self.board.apply_action(new_object, actions, pygame, surface)
                     next_state = board_to_tensor(self.board.board, new_object)
 
                     if self.board.is_out():  # if there is any object outside of zone
