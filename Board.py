@@ -14,6 +14,7 @@ from Position import Position
 from colors import COLORS
 import random
 import time
+import numpy as np
 
 # List of all available objects
 object_list = [ObjectI, ObjectJ, ObjectL, ObjectO, ObjectS, ObjectT, ObjectZ]
@@ -232,7 +233,7 @@ class Board:
 
                 if all(not self.board[y][x].is_accessible() for x in range(1, x_boxes - 1)):
                     # Clear the row
-                    reward += 1
+                    reward += 5
                     for x in range(1, x_boxes - 1):
                         self.board[y][x].set_accessible(True)
                         self.board[y][x].set_color("BLACK")
@@ -361,7 +362,7 @@ class Board:
 
         for x in x_list:
             if self.board[y_max + 1][x].is_accessible():
-                reward -= 0.1 # Negative reward for every gap under the block
+                reward -= 0.5 # Negative reward for every gap under the block
 
         if reward == 0: # If no gap return positive reward
             reward = 0.1
@@ -376,11 +377,10 @@ class Board:
         """
         reward = 0
         y_max, _ = object.get_ymax_coord()
+        y_real = y_max - 1 - 4
 
-        if y_max >= 0.75 * (y_boxes - 2):
-            reward += 0.5 # Reward if it is in the lowest quarter of the game board
-        elif y_max >= 0.5 * (y_boxes - 2):
-            reward += 0.05 # Reward if it is at least in the lower half of the game board
+        normalized_height = y_real / (y_boxes - 2 - 4)
+        reward += 1.0 * normalized_height
 
         return reward
 
@@ -393,10 +393,9 @@ class Board:
         reward = 0
         y_max, x_list = object.get_ymax_coord()
 
-        if not self.board[y_max][x_list[0] - 1].is_accessible():
-            reward += 0.1 # Reward if it touches something on the left side
-        if not self.board[y_max][x_list[len(x_list) - 1] + 1].is_accessible():
-            reward += 0.1 # Reward if it touches something on the right side
+        if (not self.board[y_max][x_list[0] - 1].is_accessible() and
+                not self.board[y_max][x_list[len(x_list) - 1] + 1].is_accessible()):
+            reward += 0.2 # Reward if it touches something on the left and right side
 
         return reward
 
@@ -407,20 +406,22 @@ class Board:
         :return: Reward
         """
         reward = 0
-        y_max, x_list = object.get_ymax_coord()
-
-        empty_boxes = 0
-        x_closest = x_boxes
-        for x in range(1, x_boxes - 1):
-            if self.board[y_max][x].is_accessible():
-                empty_boxes += 1
-            elif abs(x - x_list[0]) < x_closest or abs(x - x_list[len(x_list)-1]) < x_closest:
-                x_closest = min(abs(x - x_list[0]), abs(x - x_list[len(x_list)-1]))
-
-        if empty_boxes + len(x_list) == x_boxes - 2:
-            return reward # Block was placed on complete new ground, return 0
-        elif x_closest >= (x_boxes - 2) / 2:
-            reward -= 0.1 # Closest neighbour is more than half of the game board distant
-        else:
-            reward += 0.1 # Reward for being closer
+        heights = self.get_column_heights()
+        std_dev = np.std(heights)
+        reward -= std_dev * 0.1
         return reward
+
+    def get_column_heights(self):
+        """
+        Method to get the heights of each column
+        :return: List of heights
+        """
+        height_list = []
+        for x in range(1, x_boxes - 1):
+            height = 0
+            for y in range(1, y_boxes - 1):
+                if not self.board[y][x].is_accessible():
+                    height += 1
+            height_list.append(height)
+
+        return height_list
