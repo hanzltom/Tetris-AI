@@ -23,4 +23,16 @@ class Object(ABC):
 
         self.center_pos = (start_x + 1, 2)
 
+    def get_ymax_coord(self):
+        y_max = 0
+        x_list = []
+        for x, y in self.pos:
+            if y > y_max:
+                x_list.clear()
+                y_max = y
+            if y == y_max:
+                x_list.append(x)
+
+        return y_max, x_list
+
 
