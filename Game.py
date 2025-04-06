@@ -7,7 +7,9 @@ import numpy as np
 import random
 from collections import deque
 import torch
+import torch.optim as optim
 import more_itertools as mit
+import traceback
 
 MEMORY_SIZE = 10000
 BATCH_SIZE = 64
@@ -17,6 +19,7 @@ EPSILON = 1.0
 EPSILON_DECAY = 0.995
 EPSILON_MIN = 0.05
 EPISODES = 10000
+
 
 replay_memory = deque(maxlen=MEMORY_SIZE)  # Store (state, action, reward, next_state, done)
 
@@ -50,6 +53,7 @@ class Game:
             sum_of_rewards = 0
             for episode in range(EPISODES):
                 print(f"Episode: {episode} out of {EPISODES}, reward: {sum_of_rewards}")
+                optimizer = optim.Adam(self.trainer.model.parameters(), lr=0.001)
                 new_object = None
                 state = None
                 running = True
@@ -88,7 +92,7 @@ class Game:
                     replay_memory.append((state, action, reward, next_state, done))
 
                     # Train the model on random batch sample
-                    self.trainer.train(replay_memory, BATCH_SIZE, GAMMA)
+                    self.trainer.train(replay_memory, BATCH_SIZE, GAMMA, optimizer)
 
                     state = next_state
                     total_reward += reward
@@ -105,4 +109,5 @@ class Game:
 
         except Exception as e:
             print(f"Error: {e}")
+            print(traceback.format_exc())
 
