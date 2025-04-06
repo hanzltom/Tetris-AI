@@ -70,33 +70,37 @@ class Game:
                     # Print board and object
                     self.board.print_board(pygame, surface, new_object)
 
-                    # Select action using ε-greedy policy
+                    # Select action using epsilon greedy policy
                     if np.random.rand() < EPSILON:
                         action = np.random.randint(0, 5)  # Random action
                     else:
                         action = self.trainer.get_action(state)
 
+                    # Move the object and get the reward
                     reward, create_new_object = self.board.apply_action(new_object, action, pygame, surface)
                     next_state = board_to_tensor(self.board.board, new_object)
 
                     if self.board.is_out():  # if there is any object outside of zone
                         done = True
 
+                    # Save all of this to the memory
                     replay_memory.append((state, action, reward, next_state, done))
 
+                    # Train the model on random batch sample
                     self.trainer.train(replay_memory, BATCH_SIZE, GAMMA)
 
                     state = next_state
                     total_reward += reward
-                    #time.sleep(0.01)
 
+                # Lower the epsilon to prefer actions from the memory over random actions
                 if EPSILON > EPSILON_MIN:
                     EPSILON *= EPSILON_DECAY
 
                 self.board = Board() # reset board for new episodes
                 sum_of_rewards += total_reward
 
-            torch.save(self.trainer.model.state_dict(), "tetris_dqn.pth")
+
+            torch.save(self.trainer.model.state_dict(), "tetris_dqn.pth") # Save the model
 
         except Exception as e:
             print(f"Error: {e}")
