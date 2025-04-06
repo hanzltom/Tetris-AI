@@ -34,15 +34,13 @@ class Trainer:
         sorted_q_values, sorted_indices = torch.sort(q_values, descending=True)
         return sorted_indices.tolist()
 
-    def train(self, replay_memory, BATCH_SIZE, GAMMA):
+    def train(self, replay_memory, BATCH_SIZE, GAMMA, optimizer):
         """
         Function to train the neural network
         :param replay_memory: Memory with previous states, its next move and its reward
         :param BATCH_SIZE: Sample size taken from replay_memory
         :param GAMMA: Discount factor
         """
-        optimizer = optim.Adam(self.model.parameters(), lr=0.001)
-
         if len(replay_memory) < BATCH_SIZE:
             return # Not enough data in memory
 
