@@ -374,7 +374,7 @@ class Board:
         if y_max >= 0.75 * (y_boxes - 2):
             reward += 0.5 # Reward if it is in the lowest quarter of the game board
         elif y_max >= 0.5 * (y_boxes - 2):
-            reward += 0.05@ #Reward if it is at least in the lower half of the game board
+            reward += 0.05 # Reward if it is at least in the lower half of the game board
 
         return reward
 
