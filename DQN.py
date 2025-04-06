@@ -7,6 +7,9 @@ import screen_setup
 input_size = screen_setup.x_boxes * screen_setup.y_boxes
 
 class DQN(nn.Module):
+    """
+    Class representing the Deep Q-Learning Neural Network
+    """
     def __init__(self):
         super(DQN, self).__init__()
         self.fc1 = nn.Linear(input_size, 128)
