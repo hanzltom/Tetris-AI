@@ -269,6 +269,11 @@ class Board:
         return False
 
     def is_at_bottom(self, object) -> bool:
+        """
+        Method checking if the object is at the bottom of the board and can be fixed
+        :param object: Object to be fixed
+        :return: Bool
+        """
         new_pos = []
         for x, y in object.pos:
             new_pos.append((x, y + 1))
@@ -279,96 +284,122 @@ class Board:
             return False
 
     def apply_action(self, new_object, action, pygame, surface):
-        if action == 0:
+        """
+        Method to apply the action to the object
+        :param new_object: Object to be moved
+        :param action: Action to be done
+        :param pygame: Pygame instance
+        :param surface: Surface instance
+        :return:
+        """
+        if action == 0: # Move LEFT
             self.move_object(new_object, "LEFT")
             if self.is_at_bottom(new_object):
                 self.lock_object(new_object)  # Lock object on the board
-                reward_lines = self.clear_lines(pygame, surface)
-                reward_other = self.check_reward(new_object)
-                reward = reward_lines + reward_other
+                reward = self.get_reward(new_object, pygame, surface)
                 return reward, True
 
-        elif action == 1:
+        elif action == 1: # Move RIGHT
             self.move_object(new_object, "RIGHT")
             if self.is_at_bottom(new_object):
                 self.lock_object(new_object)  # Lock object on the board
-                reward_lines = self.clear_lines(pygame, surface)
-                reward_other = self.check_reward(new_object)
-                reward = reward_lines + reward_other
+                reward = self.get_reward(new_object, pygame, surface)
                 return reward, True
 
-        elif action == 2:
+        elif action == 2: # Move DOWN
             self.move_object(new_object, "DOWN")
             if self.is_at_bottom(new_object):
                 self.lock_object(new_object)  # Lock object on the board
-                reward_lines = self.clear_lines(pygame, surface)
-                reward_other = self.check_reward(new_object)
-                reward = reward_lines + reward_other
+                reward = self.get_reward(new_object, pygame, surface)
                 return reward, True
 
-        elif action == 3:
+        elif action == 3: # Rotate RIGHT
             self.rotate_piece(new_object, "RIGHT")
             if self.is_at_bottom(new_object):
                 self.lock_object(new_object)  # Lock object on the board
-                reward_lines = self.clear_lines(pygame, surface)
-                reward_other = self.check_reward(new_object)
-                reward = reward_lines + reward_other
+                reward = self.get_reward(new_object, pygame, surface)
                 return reward, True
 
-        elif action == 4:
+        elif action == 4: # Rotate LEFT
             self.rotate_piece(new_object, "LEFT")
             if self.is_at_bottom(new_object):
                 self.lock_object(new_object)  # Lock object on the board
-                reward_lines = self.clear_lines(pygame, surface)
-                reward_other = self.check_reward(new_object)
-                reward = reward_lines + reward_other
+                reward = self.get_reward(new_object, pygame, surface)
                 return reward, True
 
         return 0, False
 
-    def check_reward(self, object):
+    def get_reward(self, object, pygame, surface):
+        """
+        Method to collect the rewards
+        :param object: Current object
+        :param pygame: Pygame instance
+        :param surface: Surface instance
+        :return: Reward sum
+        """
+        reward_lines = self.clear_lines(pygame, surface)
         reward_gaps = self.check_gaps(object)
         reward_height = self.check_height(object)
         reward_tightness = self.check_tightness(object)
         reward_closeness = self.check_closeness(object)
-        return reward_gaps + reward_height + reward_tightness + reward_closeness
+        return reward_lines + reward_gaps + reward_height + reward_tightness + reward_closeness
 
     def check_gaps(self, object):
+        """
+        Reward method checking if under the object are any gaps
+        :param object: Current object
+        :return: Reward
+        """
         reward = 0
         y_max, x_list = object.get_ymax_coord()
 
         for x in x_list:
             if self.board[y_max + 1][x].is_accessible():
-                reward -= 0.1
+                reward -= 0.1 # Negative reward for every gap under the block
 
-        if reward == 0:
+        if reward == 0: # If no gap return positive reward
             reward = 0.1
 
         return reward
 
     def check_height(self, object):
+        """
+        Reward method checking if in which height the block was placed, the lower the better
+        :param object: Current object
+        :return: Reward
+        """
         reward = 0
         y_max, _ = object.get_ymax_coord()
 
         if y_max >= 0.75 * (y_boxes - 2):
-            reward += 0.5
+            reward += 0.5 # Reward if it is in the lowest quarter of the game board
         elif y_max >= 0.5 * (y_boxes - 2):
-            reward += 0.05
+            reward += 0.05@ #Reward if it is at least in the lower half of the game board
 
         return reward
 
     def check_tightness(self, object):
+        """
+        Reward method checking if the bottom part of the block is placed tightly between oder blocks
+        :param object: Current object
+        :return: Reward
+        """
         reward = 0
         y_max, x_list = object.get_ymax_coord()
 
         if not self.board[y_max][x_list[0] - 1].is_accessible():
-            reward += 0.1
+            reward += 0.1 # Reward if it touches something on the left side
         if not self.board[y_max][x_list[len(x_list) - 1] + 1].is_accessible():
-            reward += 0.1
+            reward += 0.1 # Reward if it touches something on the right side
 
         return reward
 
     def check_closeness(self, object):
+        """
+        Reward method checking how far away are the closest blocks
+        :param object: Current object
+        :return: Reward
+        """
         reward = 0
         y_max, x_list = object.get_ymax_coord()
 
@@ -381,9 +412,9 @@ class Board:
                 x_closest = min(abs(x - x_list[0]), abs(x - x_list[len(x_list)-1]))
 
         if empty_boxes + len(x_list) == x_boxes - 2:
-            return reward
+            return reward # Block was placed on complete new ground, return 0
         elif x_closest >= (x_boxes - 2) / 2:
-            reward -= 0.1
+            reward -= 0.1 # Closest neighbour is more than half of the game board distant
         else:
-            reward += 0.1
+            reward += 0.1 # Reward for being closer
         return reward
