@@ -7,6 +7,7 @@ import torch.optim as optim
 from DQN import DQN
 import screen_setup
 import random
+import Board
 
 
 class Trainer:
@@ -25,14 +26,13 @@ class Trainer:
 
     def get_action(self, state_tensor):
         """
-        Function to get next move (action) from the model
+        Function to get next moves (actions) from the model
         :param state_tensor: environment state
         :return: best move
         """
         q_values = self.model(state_tensor)  # predict q-values
-
-        action = torch.argmax(q_values).item()
-        return action
+        sorted_q_values, sorted_indices = torch.sort(q_values, descending=True)
+        return sorted_indices.tolist()
 
     def train(self, replay_memory, BATCH_SIZE, GAMMA):
         """
