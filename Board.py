@@ -335,14 +335,7 @@ class Board:
 
     def check_gaps(self, object):
         reward = 0
-        y_max = 0
-        x_list = []
-        for x, y in object.pos:
-            if y > y_max:
-                x_list.clear()
-                y_max = y
-            if y == y_max:
-                x_list.append(x)
+        y_max, x_list = object.get_ymax_coord()
 
         for x in x_list:
             if self.board[y_max + 1][x].is_accessible():
@@ -355,40 +348,29 @@ class Board:
 
     def check_height(self, object):
         reward = 0
-        y_max = 0
-        for _, y in object.pos:
-            if y > y_max:
-                y_max = y
+        y_max, _ = object.get_ymax_coord()
 
-        if y_max >= 0.75 * y_boxes:
-            reward += 0.05
-        elif y_max <= 0.25 * y_boxes:
+        if y_max >= 0.75 * (y_boxes - 2):
             reward += 0.5
+        elif y_max >= 0.5 * (y_boxes - 2):
+            reward += 0.05
 
         return reward
 
     def check_tightness(self, object):
         reward = 0
-        flag = True
-        for x, y in object.pos:
-            if self.board[y][x - 1].is_accessible() or self.board[y][x + 1].is_accessible():
-                flag = False
-                break
+        y_max, x_list = object.get_ymax_coord()
 
-        if flag:
-            reward += 0.2
+        if not self.board[y_max][x_list[0] - 1].is_accessible():
+            reward += 0.1
+        if not self.board[y_max][x_list[len(x_list) - 1] + 1].is_accessible():
+            reward += 0.1
+
         return reward
 
     def check_closeness(self, object):
         reward = 0
-        y_max = 0
-        x_list = []
-        for x, y in object.pos:
-            if y > y_max:
-                x_list.clear()
-                y_max = y
-            if y == y_max:
-                x_list.append(x)
+        y_max, x_list = object.get_ymax_coord()
 
         empty_boxes = 0
         x_closest = x_boxes
@@ -400,7 +382,7 @@ class Board:
 
         if empty_boxes + len(x_list) == x_boxes - 2:
             return reward
-        elif x_closest >= x_boxes - 2:
+        elif x_closest >= (x_boxes - 2) / 2:
             reward -= 0.1
         else:
             reward += 0.1
