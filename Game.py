@@ -25,7 +25,7 @@ EPISODES = 10000
 logging.basicConfig(filename="logs.log", format='%(asctime)s %(message)s', filemode='w')
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
-tuple_sum_by_indices = lambda x,y : (x[0] + y[0], x[1] + y[1], x[2] + y[2], x[3] + y[3], x[4] + y[4])
+tuple_sum_by_indices = lambda x,y : (x[0] + y[0], x[1] + y[1], x[2] + y[2], x[3] + y[3], x[4] + y[4], x[5] + y[5], x[6] + y[6])
 
 replay_memory = deque(maxlen=MEMORY_SIZE)  # Store (state, action, reward, next_state, done)
 
@@ -64,8 +64,8 @@ class Game:
                 state = None
                 create_new_object = True # if needed to create new object
                 done = False
-                total_reward = 0
-                episode_reward_sum = (0,0,0,0,0)
+                total_reward, round_counter = 0, 0
+                episode_reward_sum = (0,0,0,0,0,0,0)
                 while True:
 
                     if self.board.is_out(): # if there is any object outside of zone
@@ -102,6 +102,7 @@ class Game:
 
                     state = next_state
                     total_reward += reward
+                    round_counter += 1
                     episode_reward_sum = tuple_sum_by_indices(log_reward, episode_reward_sum)
 
                 # Lower the epsilon to prefer actions from the memory over random actions
@@ -112,10 +113,11 @@ class Game:
                 sum_of_rewards += total_reward
 
                 print(f"Episode: {episode} out of {EPISODES}, reward: {sum_of_rewards:.1f}")
-                logger.info(f"Episode: {episode}, sum: {sum_of_rewards:.1f}, "
-                            f"reward_lines: {episode_reward_sum[0]:.1f}, reward_gaps: {episode_reward_sum[1]:.1f}, "
-                            f"reward_height: {episode_reward_sum[2]:.1f}, reward_tightness: {episode_reward_sum[3]:.1f}, "
-                            f"reward_closeness: {episode_reward_sum[4]:.1f}")
+                logger.info(f"Episode: {episode}, sum: {sum_of_rewards:.1f}, number_of_rounds: {round_counter} "
+                            f"REWARDS: [lines: {episode_reward_sum[0]:.1f}, gaps: {episode_reward_sum[1]:.1f}, "
+                            f"height: {episode_reward_sum[2]:.1f}, tightness: {episode_reward_sum[3]:.1f}, "
+                            f"closeness: {episode_reward_sum[4]:.1f}, centering: {episode_reward_sum[5]:.1f},"
+                            f"coverage: {episode_reward_sum[6]:.1f}]")
 
 
             torch.save(self.trainer.model.state_dict(), "tetris_dqn.pth") # Save the model

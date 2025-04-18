@@ -334,7 +334,7 @@ class Board:
                     reward, log_reward = self.get_reward(new_object, pygame, surface)
                     return reward, True, action, log_reward
 
-            return 0, False, action, (0,0,0,0,0)
+            return 0, False, action, (0,0,0,0,0,0,0)
 
     def get_reward(self, object, pygame, surface):
         """
@@ -349,7 +349,10 @@ class Board:
         reward_height = self.check_height(object)
         reward_tightness = self.check_tightness(object)
         reward_closeness = self.check_closeness(object)
-        log_reward = (reward_lines, reward_gaps, reward_height, reward_tightness, reward_closeness)
+        reward_centering = self.check_centering(object)
+        reward_coverage = self.check_coverage()
+        log_reward = (reward_lines, reward_gaps, reward_height, reward_tightness, reward_closeness,
+                      reward_centering, reward_coverage)
         sum_reward = sum(log_reward)
         return sum_reward, log_reward
 
@@ -404,6 +407,8 @@ class Board:
     def check_centering(self, object):
         """
         Penalize blocks too far from the center
+        :param object: Current object
+        :return: Reward
         """
         reward = 0
         _, x_list = object.get_ymax_coord()
@@ -421,8 +426,20 @@ class Board:
         reward = 0
         heights = self.get_column_heights()
         std_dev = np.std(heights)
-        reward -= min(std_dev * 0.1, 0.3)
+        mean_height = np.mean(heights)
+
+        reward -= std_dev * 0.4  # penalty for uneven surfaces
+        reward -= mean_height * 0.2 # penalty for stacking too high
         return reward
+
+    def check_coverage(self):
+        """
+        Reward more filled columns
+        :return: Reward
+        """
+        heights = self.get_column_heights()
+        filled_columns = sum(1 for h in heights if h > 0)
+        return filled_columns * 0.05
 
     def get_column_heights(self):
         """
