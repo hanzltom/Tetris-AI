@@ -59,8 +59,6 @@ class Game:
             sum_of_rewards = 0
             log_rewards = ()
             for episode in range(EPISODES):
-                #TODO move optimizer to DQN
-                optimizer = optim.Adam(self.trainer.model.parameters(), lr=0.001)
 
                 new_object = None
                 state = None

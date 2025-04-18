@@ -18,7 +18,7 @@ class DQN(nn.Module):
         self.fc1 = nn.Linear(64 * 21 * 11, 128)
         self.fc2 = nn.Linear(128, 5)
 
-        self.optimizer = optim.Adam(self.model.parameters(), lr=0.001)
+        self.optimizer = optim.Adam(self.parameters(), lr=0.001)
 
     def forward(self, x):
         x = torch.relu(self.conv1(x))
