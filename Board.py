@@ -291,7 +291,7 @@ class Board:
         :param actions: Action list to be done
         :param pygame: Pygame instance
         :param surface: Surface instance
-        :return:
+        :return: reward, new_object_needed, output_action
         """
         for action in actions:
             if action == 0: # Move LEFT
@@ -362,7 +362,7 @@ class Board:
 
         for x in x_list:
             if self.board[y_max + 1][x].is_accessible():
-                reward -= 0.5 # Negative reward for every gap under the block
+                reward -= 0.2 # Negative reward for every gap under the block
 
         if reward == 0: # If no gap return positive reward
             reward = 0.1
@@ -399,6 +399,17 @@ class Board:
 
         return reward
 
+    def check_centering(self, object):
+        """
+        Penalize blocks too far from the center
+        """
+        reward = 0
+        _, x_list = object.get_ymax_coord()
+        board_center = x_boxes // 2
+        for x in x_list:
+            reward -= 0.05 * abs(x - board_center)  # Tweak weight
+        return reward
+
     def check_closeness(self, object):
         """
         Reward method checking how far away are the closest blocks
@@ -408,7 +419,7 @@ class Board:
         reward = 0
         heights = self.get_column_heights()
         std_dev = np.std(heights)
-        reward -= std_dev * 0.1
+        reward -= std_dev * 0.2
         return reward
 
     def get_column_heights(self):
