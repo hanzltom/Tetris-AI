@@ -28,7 +28,7 @@ class Game:
     """
     Class Game which serves as the main game loop calling other methods
     """
-    def __init__(self, pygame, surface):
+    def __init__(self, pygame, surface, old_model_usage):
         """
         Constructor of Game for setting the Board and printing it
         :param pygame: Pygame object
@@ -37,7 +37,7 @@ class Game:
         self.board = Board()
         self.board.print_board(pygame, surface)
         pygame.display.flip()
-        self.trainer = Trainer()
+        self.trainer = Trainer(old_model_usage)
 
 
     def loop(self, pygame, surface):

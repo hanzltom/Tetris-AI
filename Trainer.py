@@ -14,12 +14,12 @@ class Trainer:
     """
     Class Trainer for training the neural network
     """
-    def __init__(self):
+    def __init__(self, old_model_usage):
         """
         Constructor creating the neural network
         """
         self.model = DQN()
-        if int(input("Do you want to load the model? 1/0: ")) == 1:
+        if old_model_usage:
             print("Using saved model")
             self.model.load_state_dict(torch.load("tetris_dqn.pth"))
 

@@ -6,6 +6,12 @@ from screen_setup import SCREEN_WIDTH, SCREEN_HEIGHT
 import torch
 
 try:
+    old_model_usage = False
+    if len(sys.argv) > 0:
+        if int(sys.argv[1]) == 1:
+            print("tady")
+            old_model_usage = True
+
     # Initialize Pygame
     pygame.init()
 
@@ -16,7 +22,7 @@ try:
     pygame.display.set_caption("Tetris")
 
     # Start Game
-    game = Game(pygame, screen)
+    game = Game(pygame, screen, old_model_usage)
     game.loop(pygame, screen)
 
     # Quit Game
