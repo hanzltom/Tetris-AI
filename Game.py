@@ -10,6 +10,7 @@ import torch
 import torch.optim as optim
 import more_itertools as mit
 import traceback
+import logging
 
 MEMORY_SIZE = 10000
 BATCH_SIZE = 64
@@ -20,6 +21,10 @@ EPSILON_DECAY = 0.995
 EPSILON_MIN = 0.05
 EPISODES = 10000
 
+# Create and configure logger
+logging.basicConfig(filename="logs.log", format='%(asctime)s %(message)s', filemode='w')
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
 
 replay_memory = deque(maxlen=MEMORY_SIZE)  # Store (state, action, reward, next_state, done)
 
@@ -51,8 +56,10 @@ class Game:
 
             EPSILON = 1.0
             sum_of_rewards = 0
+            log_rewards = ()
             for episode in range(EPISODES):
-                print(f"Episode: {episode} out of {EPISODES}, reward: {sum_of_rewards}")
+                print(f"Episode: {episode} out of {EPISODES}, reward: {sum_of_rewards:.1f}")
+                logger.info(f"Episode: {episode}, sum: {sum_of_rewards:.1f}")
                 optimizer = optim.Adam(self.trainer.model.parameters(), lr=0.001)
                 new_object = None
                 state = None
@@ -82,7 +89,7 @@ class Game:
                         actions = self.trainer.get_action(state)
 
                     # Move the object and get the reward
-                    reward, create_new_object, action = self.board.apply_action(new_object, actions, pygame, surface)
+                    reward, create_new_object, action, log_rewards = self.board.apply_action(new_object, actions, pygame, surface)
                     next_state = board_to_tensor(self.board.board, new_object)
 
                     if self.board.is_out():  # if there is any object outside of zone
