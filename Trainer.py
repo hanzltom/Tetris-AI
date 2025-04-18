@@ -34,7 +34,7 @@ class Trainer:
         sorted_q_values, sorted_indices = torch.sort(q_values, descending=True)
         return sorted_indices.tolist()[0]
 
-    def train(self, replay_memory, BATCH_SIZE, GAMMA, optimizer):
+    def train(self, replay_memory, BATCH_SIZE, GAMMA):
         """
         Function to train the neural network
         :param replay_memory: Memory with previous states, its next move and its reward
@@ -62,9 +62,9 @@ class Trainer:
 
         # Compute loss and update model
         loss = torch.nn.MSELoss()(predicted_q_values, target_q_values)
-        optimizer.zero_grad()
+        self.model.optimizer.zero_grad()
         loss.backward()
-        optimizer.step()
+        self.model.optimizer.step()
 
 def board_to_tensor(board, object = None):
     """

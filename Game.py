@@ -100,7 +100,7 @@ class Game:
                     replay_memory.append((state, action, reward, next_state, done))
 
                     # Train the model on random batch sample
-                    self.trainer.train(replay_memory, BATCH_SIZE, GAMMA, optimizer)
+                    self.trainer.train(replay_memory, BATCH_SIZE, GAMMA)
 
                     state = next_state
                     total_reward += reward
