@@ -30,9 +30,9 @@ class Trainer:
         :param state_tensor: environment state
         :return: best move
         """
-        q_values = self.model(state_tensor)  # predict q-values
+        q_values = self.model(state_tensor.unsqueeze(0))  # predict q-values
         sorted_q_values, sorted_indices = torch.sort(q_values, descending=True)
-        return sorted_indices.tolist()
+        return sorted_indices.tolist()[0]
 
     def train(self, replay_memory, BATCH_SIZE, GAMMA, optimizer):
         """
@@ -51,7 +51,7 @@ class Trainer:
         # Stack concatenates a list of tensors along a new dimension
         states = torch.stack(states)
         next_states = torch.stack(next_states)
-        actions = torch.tensor(actions, dtype=torch.long).unsqueeze(1)
+        actions = torch.tensor(actions, dtype=torch.long).view(-1, 1)
         rewards = torch.tensor(rewards, dtype=torch.float32)
         dones = torch.tensor(dones, dtype=torch.float32)
 
@@ -83,6 +83,6 @@ def board_to_tensor(board, object = None):
             for y in range(screen_setup.y_boxes)]
 
     numpy_array = np.array(board_list, dtype=np.float32) # convert to numpy
-    tensor_board = torch.tensor(numpy_array.flatten()) # conver to tensor
+    tensor_board = torch.tensor(numpy_array).unsqueeze(0) # convert to tensor
     return tensor_board
 
