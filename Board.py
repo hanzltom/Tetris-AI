@@ -407,7 +407,7 @@ class Board:
         _, x_list = object.get_ymax_coord()
         board_center = x_boxes // 2
         for x in x_list:
-            reward -= 0.05 * abs(x - board_center)  # Tweak weight
+            reward -= 0.1 * abs(x - board_center)  # Tweak weight
         return reward
 
     def check_closeness(self, object):
@@ -419,7 +419,7 @@ class Board:
         reward = 0
         heights = self.get_column_heights()
         std_dev = np.std(heights)
-        reward -= std_dev * 0.2
+        reward -= min(std_dev * 0.1, 0.3)
         return reward
 
     def get_column_heights(self):
