@@ -25,6 +25,7 @@ EPISODES = 10000
 logging.basicConfig(filename="logs.log", format='%(asctime)s %(message)s', filemode='w')
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
+tuple_sum_by_indices = lambda x,y : (x[0] + y[0], x[1] + y[1], x[2] + y[2], x[3] + y[3], x[4] + y[4])
 
 replay_memory = deque(maxlen=MEMORY_SIZE)  # Store (state, action, reward, next_state, done)
 
@@ -58,16 +59,16 @@ class Game:
             sum_of_rewards = 0
             log_rewards = ()
             for episode in range(EPISODES):
-                print(f"Episode: {episode} out of {EPISODES}, reward: {sum_of_rewards:.1f}")
-                logger.info(f"Episode: {episode}, sum: {sum_of_rewards:.1f}")
+                #TODO move optimizer to DQN
                 optimizer = optim.Adam(self.trainer.model.parameters(), lr=0.001)
+
                 new_object = None
                 state = None
-                running = True
                 create_new_object = True # if needed to create new object
                 done = False
                 total_reward = 0
-                while running:
+                episode_reward_sum = (0,0,0,0,0)
+                while True:
 
                     if self.board.is_out(): # if there is any object outside of zone
                         break
@@ -89,7 +90,7 @@ class Game:
                         actions = self.trainer.get_action(state)
 
                     # Move the object and get the reward
-                    reward, create_new_object, action, log_rewards = self.board.apply_action(new_object, actions, pygame, surface)
+                    reward, create_new_object, action, log_reward = self.board.apply_action(new_object, actions, pygame, surface)
                     next_state = board_to_tensor(self.board.board, new_object)
 
                     if self.board.is_out():  # if there is any object outside of zone
@@ -103,6 +104,7 @@ class Game:
 
                     state = next_state
                     total_reward += reward
+                    episode_reward_sum = tuple_sum_by_indices(log_reward, episode_reward_sum)
 
                 # Lower the epsilon to prefer actions from the memory over random actions
                 if EPSILON > EPSILON_MIN:
@@ -110,6 +112,12 @@ class Game:
 
                 self.board = Board() # reset board for new episodes
                 sum_of_rewards += total_reward
+
+                print(f"Episode: {episode} out of {EPISODES}, reward: {sum_of_rewards:.1f}")
+                logger.info(f"Episode: {episode}, sum: {sum_of_rewards:.1f}, "
+                            f"reward_lines: {episode_reward_sum[0]:.1f}, reward_gaps: {episode_reward_sum[1]:.1f}, "
+                            f"reward_height: {episode_reward_sum[2]:.1f}, reward_tightness: {episode_reward_sum[3]:.1f}, "
+                            f"reward_closeness: {episode_reward_sum[4]:.1f}")
 
 
             torch.save(self.trainer.model.state_dict(), "tetris_dqn.pth") # Save the model

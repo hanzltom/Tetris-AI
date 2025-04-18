@@ -299,42 +299,42 @@ class Board:
                     continue
                 if self.is_at_bottom(new_object):
                     self.lock_object(new_object)  # Lock object on the board
-                    reward = self.get_reward(new_object, pygame, surface)
-                    return reward, True, action
+                    reward, log_reward = self.get_reward(new_object, pygame, surface)
+                    return reward, True, action, log_reward
 
             elif action == 1: # Move RIGHT
                 if not self.move_object(new_object, "RIGHT"):
                     continue
                 if self.is_at_bottom(new_object):
                     self.lock_object(new_object)  # Lock object on the board
-                    reward = self.get_reward(new_object, pygame, surface)
-                    return reward, True, action
+                    reward, log_reward = self.get_reward(new_object, pygame, surface)
+                    return reward, True, action, log_reward
 
             elif action == 2: # Move DOWN
                 if not self.move_object(new_object, "DOWN"):
                     continue
                 if self.is_at_bottom(new_object):
                     self.lock_object(new_object)  # Lock object on the board
-                    reward = self.get_reward(new_object, pygame, surface)
-                    return reward, True, action
+                    reward, log_reward = self.get_reward(new_object, pygame, surface)
+                    return reward, True, action, log_reward
 
             elif action == 3: # Rotate RIGHT
                 if not self.rotate_piece(new_object, "RIGHT"):
                     continue
                 if self.is_at_bottom(new_object):
                     self.lock_object(new_object)  # Lock object on the board
-                    reward = self.get_reward(new_object, pygame, surface)
-                    return reward, True, action
+                    reward, log_reward = self.get_reward(new_object, pygame, surface)
+                    return reward, True, action, log_reward
 
             elif action == 4: # Rotate LEFT
                 if not self.rotate_piece(new_object, "LEFT"):
                     continue
                 if self.is_at_bottom(new_object):
                     self.lock_object(new_object)  # Lock object on the board
-                    reward = self.get_reward(new_object, pygame, surface)
-                    return reward, True, action
+                    reward, log_reward = self.get_reward(new_object, pygame, surface)
+                    return reward, True, action, log_reward
 
-            return 0, False, action
+            return 0, False, action, (0,0,0,0,0)
 
     def get_reward(self, object, pygame, surface):
         """
@@ -342,14 +342,16 @@ class Board:
         :param object: Current object
         :param pygame: Pygame instance
         :param surface: Surface instance
-        :return: Reward sum
+        :return: Reward sum, log output for rewards
         """
         reward_lines = self.clear_lines(pygame, surface)
         reward_gaps = self.check_gaps(object)
         reward_height = self.check_height(object)
         reward_tightness = self.check_tightness(object)
         reward_closeness = self.check_closeness(object)
-        return reward_lines + reward_gaps + reward_height + reward_tightness + reward_closeness
+        log_reward = (reward_lines, reward_gaps, reward_height, reward_tightness, reward_closeness)
+        sum_reward = sum(log_reward)
+        return sum_reward, log_reward
 
     def check_gaps(self, object):
         """
