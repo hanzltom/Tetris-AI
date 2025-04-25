@@ -22,10 +22,10 @@ EPSILON_MIN = 0.05
 EPISODES = 10000
 
 # Create and configure logger
-logging.basicConfig(filename="logs.log", format='%(asctime)s %(message)s', filemode='w')
+logging.basicConfig(filename="logs.log", format='%(asctime)s %(message)s', filemode='a')
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
-tuple_sum_by_indices = lambda x,y : (x[0] + y[0], x[1] + y[1], x[2] + y[2], x[3] + y[3], x[4] + y[4], x[5] + y[5], x[6] + y[6])
+tuple_sum_by_indices = lambda x, y: tuple(a + b for a, b in zip(x, y))
 
 replay_memory = deque(maxlen=MEMORY_SIZE)  # Store (state, action, reward, next_state, done)
 
