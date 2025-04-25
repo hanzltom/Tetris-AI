@@ -12,17 +12,20 @@ class DQN(nn.Module):
     """
     def __init__(self):
         super(DQN, self).__init__()
-        self.conv1 = nn.Conv2d(1, 32, kernel_size=3, padding=1)
-        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
+        self.conv1 = nn.Conv2d(1, 32, kernel_size=3, stride=1, padding=1)  # output size (32, 21, 11)
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1)  # output size (64, 21, 11)
+        self.conv3 = nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1)  # output size (64, 21, 11)
 
-        self.fc1 = nn.Linear(64 * 21 * 11, 128)
-        self.fc2 = nn.Linear(128, 5)
+        self.flatten = nn.Flatten()
+        self.fc1 = nn.Linear(64 * input_size, 512)
+        self.fc2 = nn.Linear(512, 5)
 
         self.optimizer = optim.Adam(self.parameters(), lr=0.001)
 
     def forward(self, x):
         x = torch.relu(self.conv1(x))
         x = torch.relu(self.conv2(x))
-        x = x.view(x.size(0), -1)  # flatten
+        x = torch.relu(self.conv3(x))
+        x = self.flatten(x)
         x = torch.relu(self.fc1(x))
         return self.fc2(x)
