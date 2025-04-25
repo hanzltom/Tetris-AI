@@ -293,48 +293,50 @@ class Board:
         :param surface: Surface instance
         :return: reward, new_object_needed, output_action
         """
+        cumulative_reward = 0
+        log_reward = (0, 0, 0, 0, 0, 0, 0)
         for action in actions:
             if action == 0: # Move LEFT
-                if not self.move_object(new_object, "LEFT"):
-                    continue
+                if self.move_object(new_object, "LEFT"):
+                    cumulative_reward += 0.01
                 if self.is_at_bottom(new_object):
                     self.lock_object(new_object)  # Lock object on the board
                     reward, log_reward = self.get_reward(new_object, pygame, surface)
                     return reward, True, action, log_reward
 
             elif action == 1: # Move RIGHT
-                if not self.move_object(new_object, "RIGHT"):
-                    continue
+                if self.move_object(new_object, "RIGHT"):
+                    cumulative_reward += 0.01
                 if self.is_at_bottom(new_object):
                     self.lock_object(new_object)  # Lock object on the board
                     reward, log_reward = self.get_reward(new_object, pygame, surface)
                     return reward, True, action, log_reward
 
             elif action == 2: # Move DOWN
-                if not self.move_object(new_object, "DOWN"):
-                    continue
+                if self.move_object(new_object, "DOWN"):
+                    cumulative_reward += 0.05
                 if self.is_at_bottom(new_object):
                     self.lock_object(new_object)  # Lock object on the board
                     reward, log_reward = self.get_reward(new_object, pygame, surface)
                     return reward, True, action, log_reward
 
             elif action == 3: # Rotate RIGHT
-                if not self.rotate_piece(new_object, "RIGHT"):
-                    continue
+                if self.rotate_piece(new_object, "RIGHT"):
+                    cumulative_reward += 0.02
                 if self.is_at_bottom(new_object):
                     self.lock_object(new_object)  # Lock object on the board
                     reward, log_reward = self.get_reward(new_object, pygame, surface)
                     return reward, True, action, log_reward
 
             elif action == 4: # Rotate LEFT
-                if not self.rotate_piece(new_object, "LEFT"):
-                    continue
+                if self.rotate_piece(new_object, "LEFT"):
+                    cumulative_reward += 0.02
                 if self.is_at_bottom(new_object):
                     self.lock_object(new_object)  # Lock object on the board
                     reward, log_reward = self.get_reward(new_object, pygame, surface)
                     return reward, True, action, log_reward
 
-            return 0, False, action, (0,0,0,0,0,0,0)
+            return cumulative_reward, False, action, log_reward
 
     def get_reward(self, object, pygame, surface):
         """
@@ -428,7 +430,7 @@ class Board:
         std_dev = np.std(heights)
         mean_height = np.mean(heights)
 
-        reward -= std_dev * 0.4  # penalty for uneven surfaces
+        reward -= std_dev * 0.3  # penalty for uneven surfaces
         reward -= mean_height * 0.2 # penalty for stacking too high
         return reward
 
