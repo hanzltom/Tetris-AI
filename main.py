@@ -1,15 +1,27 @@
 import pygame
 import sys
 import os
+import argparse
 import traceback
 from Game import *
 from screen_setup import SCREEN_WIDTH, SCREEN_HEIGHT
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--train0', action='store_true', help='Enable training mode with new model')
+parser.add_argument('--train1', action='store_true', help='Enable training mode with saved model')
+parser.add_argument('--play', action='store_true', help='Let the model start playing')
+args = parser.parse_args()
+
 try:
     old_model_usage = False
-    if len(sys.argv) > 0:
-        if int(sys.argv[1]) == 1:
-            old_model_usage = True
+
+    if args.train1:
+        print("Training with saved model")
+        old_model_usage = True
+    elif args.play:
+        print("Playing")
+    else:
+        print("Training with new model")
 
     # Initialize Pygame
     pygame.init()
