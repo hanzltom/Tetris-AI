@@ -2,7 +2,7 @@ import pygame
 import sys
 import os
 import traceback
-from Game import Game
+from Game import *
 from screen_setup import SCREEN_WIDTH, SCREEN_HEIGHT
 
 try:
@@ -22,7 +22,7 @@ try:
 
     # Start Game
     game = Game(pygame, screen, old_model_usage)
-    game.loop(pygame, screen)
+    game.loop(pygame, screen, old_model_usage)
 
     # Quit Game
     pygame.quit()

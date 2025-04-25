@@ -5,6 +5,8 @@ from Trainer import Trainer, board_to_tensor
 import time
 import numpy as np
 import random
+import json
+import pickle
 from collections import deque
 import torch
 import torch.optim as optim
@@ -20,6 +22,10 @@ EPSILON = 1.0
 EPSILON_DECAY = 0.995
 EPSILON_MIN = 0.05
 EPISODES = 10000
+
+# used for saving to a json file
+CURRENT_EPISODE = 0
+CURRENT_SUM_OF_REWARDS = 0
 
 # Create and configure logger
 logging.basicConfig(filename="logs.log", format='%(asctime)s %(message)s', filemode='a')
@@ -39,26 +45,37 @@ class Game:
         Constructor of Game for setting the Board and printing it
         :param pygame: Pygame object
         :param surface: Surface object for printing
+        :param old_model_usage: Bool if to import old model
         """
         self.board = Board()
         self.board.print_board(pygame, surface)
         pygame.display.flip()
         self.trainer = Trainer(old_model_usage)
 
+        if old_model_usage:
+            global replay_memory
+            replay_memory = pickle.load(open('replay_memory.pkl', 'rb'))
 
-    def loop(self, pygame, surface):
+
+    def loop(self, pygame, surface, old_model_usage):
         """
         Function loop managing the game
         :param pygame: Pygame object
         :param surface: Surface object for printing
+        :param old_model_usage: Bool if to import old model
         :return: None
         """
         try:
+            global EPSILON
+            episode_old, sum_of_rewards = 0, 0
 
-            EPSILON = 1.0
-            sum_of_rewards = 0
-            log_rewards = ()
-            for episode in range(EPISODES):
+            if old_model_usage:
+                episode_old, sum_of_rewards, EPSILON = self.read_json()
+
+            for episode in range(episode_old, EPISODES):
+                global CURRENT_EPISODE, CURRENT_SUM_OF_REWARDS
+                CURRENT_EPISODE = episode
+                CURRENT_SUM_OF_REWARDS = sum_of_rewards
 
                 new_object = None
                 state = None
@@ -112,7 +129,7 @@ class Game:
                 self.board = Board() # reset board for new episodes
                 sum_of_rewards += total_reward
 
-                print(f"Episode: {episode} out of {EPISODES}, reward: {sum_of_rewards:.1f}")
+                print(f"Episode: {episode} out of {EPISODES}, reward: {sum_of_rewards:.1f}, epsilon: {EPSILON}")
                 logger.info(f"Episode: {episode}, sum: {sum_of_rewards:.1f}, number_of_rounds: {round_counter} "
                             f"REWARDS: [lines: {episode_reward_sum[0]:.1f}, gaps: {episode_reward_sum[1]:.1f}, "
                             f"height: {episode_reward_sum[2]:.1f}, tightness: {episode_reward_sum[3]:.1f}, "
@@ -122,6 +139,7 @@ class Game:
 
             torch.save(self.trainer.model.state_dict(), "tetris_dqn.pth") # Save the model
 
+
         except KeyboardInterrupt as e:
             print(e)
             save = None
@@ -130,3 +148,17 @@ class Game:
             if save == 1:
                 torch.save(self.trainer.model.state_dict(), "tetris_dqn.pth")
 
+                dict_to_save = {
+                    "episode": CURRENT_EPISODE,
+                    "sum_of_rewards": CURRENT_SUM_OF_REWARDS,
+                    "EPSILON": EPSILON,
+                }
+                with open("sample.json", "w") as outfile:
+                    json.dump(dict_to_save, outfile)
+
+                pickle.dump(replay_memory, open('replay_memory.pkl', 'wb'))
+
+    def read_json(self):
+        with open('sample.json', ) as file:
+            data = json.load(file)
+            return data["episode"], data["sum_of_rewards"], data["EPSILON"]
