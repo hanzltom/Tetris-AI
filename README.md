@@ -14,6 +14,11 @@ The perfect model is still not ready, since it takes a lot of training time to g
 
 ---
 
+The branch called **game_for_one** can be used for classic game of Tetris for one player
+
+
+---
+
 ## How to run
 ```bash
    python3 main.py
