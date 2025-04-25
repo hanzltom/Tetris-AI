@@ -122,7 +122,11 @@ class Game:
 
             torch.save(self.trainer.model.state_dict(), "tetris_dqn.pth") # Save the model
 
-        except Exception as e:
-            print(f"Error: {e}")
-            print(traceback.format_exc())
+        except KeyboardInterrupt as e:
+            print(e)
+            save = None
+            while save != 1 and save != 0:
+                save = int(input("Do you want to save the model? 1/0: "))
+            if save == 1:
+                torch.save(self.trainer.model.state_dict(), "tetris_dqn.pth")
 

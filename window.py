@@ -1,15 +1,14 @@
 import pygame
 import sys
 import os
+import traceback
 from Game import Game
 from screen_setup import SCREEN_WIDTH, SCREEN_HEIGHT
-import torch
 
 try:
     old_model_usage = False
     if len(sys.argv) > 0:
         if int(sys.argv[1]) == 1:
-            print("tady")
             old_model_usage = True
 
     # Initialize Pygame
@@ -29,10 +28,6 @@ try:
     pygame.quit()
     sys.exit()
 
-except KeyboardInterrupt as e:
-    print(e)
-    save = None
-    while save != 1 and save != 0:
-        save = int(input("Do you want to save the model? 1/0: "))
-    if save == 1:
-        torch.save(game.trainer.model.state_dict(), "tetris_dqn.pth")
+except Exception as e:
+    print(f"Error: {e}")
+    print(traceback.format_exc())
