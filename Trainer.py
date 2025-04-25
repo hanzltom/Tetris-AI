@@ -20,7 +20,6 @@ class Trainer:
         """
         self.model = DQN()
         if old_model_usage:
-            print("Using saved model")
             self.model.load_state_dict(torch.load("tetris_dqn.pth"))
 
 
